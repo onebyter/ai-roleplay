@@ -1,20 +1,25 @@
 import React from 'react'
 import { Message } from '@/types/message'
 import ReactMarkdown from 'react-markdown'
+import Avatar from '@/components/ui/Avatar'
 
 interface MessageBubbleProps {
   message: Message
 }
 
-const CHARACTER_COLORS: Record<string, string> = {}
-const COLOR_PALETTE = ['#6c63ff', '#e91e63', '#00bcd4', '#ff9800', '#4caf50', '#9c27b0', '#f44336', '#2196f3']
+const CHAR_COLORS = [
+  'var(--color-char-1)', 'var(--color-char-2)', 'var(--color-char-3)',
+  'var(--color-char-4)', 'var(--color-char-5)', 'var(--color-char-6)',
+  'var(--color-char-7)', 'var(--color-char-8)',
+]
+const CHARACTER_COLOR_MAP: Record<string, string> = {}
 
 function getCharacterColor(id: string): string {
-  if (!CHARACTER_COLORS[id]) {
-    const index = Object.keys(CHARACTER_COLORS).length % COLOR_PALETTE.length
-    CHARACTER_COLORS[id] = COLOR_PALETTE[index]
+  if (!CHARACTER_COLOR_MAP[id]) {
+    const index = Object.keys(CHARACTER_COLOR_MAP).length % CHAR_COLORS.length
+    CHARACTER_COLOR_MAP[id] = CHAR_COLORS[index]
   }
-  return CHARACTER_COLORS[id]
+  return CHARACTER_COLOR_MAP[id]
 }
 
 export default function MessageBubble({ message }: MessageBubbleProps) {
@@ -22,73 +27,68 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
   const isGM = message.characterId === 'gm'
   const isSystem = message.type === 'system'
   const isNarration = message.type === 'narration'
-  const color = isUser ? 'var(--accent)' : isGM ? '#e91e63' : getCharacterColor(message.characterId)
+  const color = isUser ? 'var(--color-accent)' : isGM ? 'var(--color-gm)' : getCharacterColor(message.characterId)
 
   if (isSystem) {
     return (
-      <div className="flex justify-center my-2">
-        <div className="text-xs px-3 py-1 rounded-full"
-          style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}>
+      <div className="flex justify-center my-3">
+        <span className="text-[11px] px-3 py-1 rounded-[var(--radius-full)] bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] border border-[var(--color-border)]">
           {message.content}
-        </div>
+        </span>
       </div>
     )
   }
 
   if (isNarration) {
     return (
-      <div className="my-3 px-4">
-        <div className="text-sm italic p-3 rounded-lg border-l-4"
-          style={{
-            backgroundColor: 'rgba(233, 30, 99, 0.08)',
-            borderColor: '#e91e63',
-            color: 'var(--text-primary)',
-          }}>
-          <div className="text-xs mb-1 font-medium" style={{ color: '#e91e63' }}>
-            GM · 叙述
+      <div className="my-3" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
+        <div className="p-4 rounded-[var(--radius-lg)] border-l-[3px] bg-[var(--color-gm-soft)] border-[var(--color-gm)]">
+          <div className="flex items-center gap-1.5 mb-2">
+            <span className="text-xs font-semibold text-[var(--color-gm)]">GM</span>
+            <span className="text-[11px] text-[var(--color-text-muted)]">· 叙述</span>
           </div>
-          <ReactMarkdown>{message.content}</ReactMarkdown>
+          <div className="text-sm leading-relaxed markdown-body">
+            <ReactMarkdown>{message.content}</ReactMarkdown>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className={`flex gap-3 my-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-      {/* Avatar */}
-      <div
-        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm shrink-0"
-        style={{ backgroundColor: color }}
-      >
-        {message.characterName[0]}
-      </div>
+    <div
+      className={`flex gap-3 my-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
+      style={{ animation: 'fadeInUp 0.3s ease-out' }}
+    >
+      <Avatar name={message.characterName} size="md" color={color} />
 
-      {/* Message Content */}
       <div className={`max-w-[70%] ${isUser ? 'items-end' : 'items-start'}`}>
-        {/* Name */}
-        <div className="text-xs mb-1 px-1" style={{ color }}>
+        <div className="text-[11px] mb-1 px-1 font-semibold" style={{ color }}>
           {message.characterName}
         </div>
-
-        {/* Bubble */}
         <div
-          className="px-3 py-2 rounded-2xl text-sm"
+          className="px-4 py-3 text-sm leading-relaxed markdown-body"
           style={{
-            backgroundColor: isUser ? 'var(--accent)' : 'var(--bg-tertiary)',
-            color: isUser ? '#fff' : 'var(--text-primary)',
-            borderBottomRightRadius: isUser ? '4px' : '16px',
-            borderBottomLeftRadius: isUser ? '16px' : '4px',
+            backgroundColor: isUser ? 'var(--color-accent)' : 'var(--color-bg-elevated)',
+            color: isUser ? '#fff' : 'var(--color-text-primary)',
+            borderRadius: isUser
+              ? 'var(--radius-lg) var(--radius-lg) 4px var(--radius-lg)'
+              : 'var(--radius-lg) var(--radius-lg) var(--radius-lg) 4px',
+            boxShadow: isUser ? 'var(--shadow-accent)' : 'var(--shadow-sm)',
           }}
         >
           <ReactMarkdown>{message.content}</ReactMarkdown>
         </div>
 
-        {/* Streaming indicator */}
         {message.isStreaming && (
-          <div className="flex gap-1 mt-1 px-1">
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: color }} />
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: color, animationDelay: '0.2s' }} />
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: color, animationDelay: '0.4s' }} />
+          <div className="flex gap-1.5 mt-2 px-1">
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className="w-1.5 h-1.5 rounded-full animate-pulse"
+                style={{ backgroundColor: color, animationDelay: `${i * 0.15}s` }}
+              />
+            ))}
           </div>
         )}
       </div>

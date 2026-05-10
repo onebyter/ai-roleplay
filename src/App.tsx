@@ -9,7 +9,10 @@ export default function App() {
   return (
     <div className="flex h-screen w-screen overflow-hidden">
       <Sidebar />
-      <ChatArea onToggleRightPanel={() => setRightPanelOpen(!rightPanelOpen)} />
+      <ChatArea
+        onToggleRightPanel={() => setRightPanelOpen(!rightPanelOpen)}
+        rightPanelOpen={rightPanelOpen}
+      />
       {rightPanelOpen && <RightPanel />}
     </div>
   )

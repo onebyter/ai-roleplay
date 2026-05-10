@@ -2,8 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useCharacterStore } from '@/stores/characterStore'
 import { useChatStore } from '@/stores/chatStore'
+import Button from '@/components/ui/Button'
+import Input from '@/components/ui/Input'
+import Avatar from '@/components/ui/Avatar'
+import { MessageSquare, Users, Settings, Plus, Trash2 } from 'lucide-react'
 
 type SidebarTab = 'sessions' | 'characters' | 'settings'
+
+const TABS: { id: SidebarTab; label: string; icon: React.ReactNode }[] = [
+  { id: 'sessions', label: '会话', icon: <MessageSquare size={15} /> },
+  { id: 'characters', label: '角色', icon: <Users size={15} /> },
+  { id: 'settings', label: '设置', icon: <Settings size={15} /> },
+]
 
 export default function Sidebar() {
   const [activeTab, setActiveTab] = useState<SidebarTab>('sessions')
@@ -17,7 +27,6 @@ export default function Sidebar() {
   const [showNewSession, setShowNewSession] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
 
-  // Load data on mount
   useEffect(() => {
     loadSessionList()
     loadCharacters()
@@ -33,7 +42,6 @@ export default function Sidebar() {
 
   const handleLoadSession = async (id: string) => {
     await loadSession(id)
-    // Load messages into chat store
     const session = useSessionStore.getState().currentSession
     if (session) {
       setMessages(session.messages)
@@ -68,157 +76,137 @@ export default function Sidebar() {
   }
 
   return (
-    <div className="w-64 flex flex-col border-r"
-      style={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border)' }}>
-      {/* Title Bar */}
-      <div className="title-bar-drag h-12 flex items-center px-4 border-b"
-        style={{ borderColor: 'var(--border)' }}>
-        <span className="text-lg font-bold title-bar-no-drag">AI RolePlay</span>
+    <div className="w-64 flex flex-col bg-[var(--color-bg-secondary)] border-r border-[var(--color-border)]">
+      {/* Title */}
+      <div className="title-bar-drag h-13 flex items-center px-4 border-b border-[var(--color-border)]">
+        <div className="title-bar-no-drag flex items-center gap-2">
+          <div className="w-7 h-7 rounded-[var(--radius-md)] bg-[var(--color-accent)] flex items-center justify-center shadow-[var(--shadow-accent)]">
+            <span className="text-white text-xs font-bold">AI</span>
+          </div>
+          <span className="text-sm font-bold tracking-tight">RolePlay</span>
+        </div>
       </div>
 
-      {/* Tab Buttons */}
-      <div className="flex border-b" style={{ borderColor: 'var(--border)' }}>
-        {(['sessions', 'characters', 'settings'] as SidebarTab[]).map((tab) => (
+      {/* Tabs */}
+      <div className="flex border-b border-[var(--color-border)] px-1">
+        {TABS.map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className="flex-1 py-2 text-sm transition-colors"
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors relative"
             style={{
-              backgroundColor: activeTab === tab ? 'var(--bg-tertiary)' : 'transparent',
-              color: activeTab === tab ? 'var(--accent)' : 'var(--text-secondary)',
-              borderBottom: activeTab === tab ? '2px solid var(--accent)' : '2px solid transparent',
+              color: activeTab === tab.id ? 'var(--color-accent)' : 'var(--color-text-muted)',
             }}
           >
-            {tab === 'sessions' ? '会话' : tab === 'characters' ? '角色' : '设置'}
+            {tab.icon}
+            {tab.label}
+            {activeTab === tab.id && (
+              <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--color-accent)] rounded-t-full" />
+            )}
           </button>
         ))}
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="flex-1 overflow-y-auto p-2.5 space-y-1">
         {activeTab === 'sessions' && (
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>会话列表</span>
-              <button
-                onClick={() => setShowNewSession(true)}
-                className="px-2 py-1 text-xs rounded"
-                style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
-              >
-                + 新建
-              </button>
+          <>
+            <div className="flex justify-between items-center mb-2 px-1.5">
+              <span className="text-[11px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">会话列表</span>
+              <Button size="sm" onClick={() => setShowNewSession(true)}>
+                <Plus size={14} /> 新建
+              </Button>
             </div>
 
             {showNewSession && (
-              <div className="mb-3 p-2 rounded" style={{ backgroundColor: 'var(--bg-primary)' }}>
-                <input
+              <div className="mb-2 p-3 rounded-[var(--radius-lg)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)]">
+                <Input
                   value={newSessionName}
                   onChange={(e) => setNewSessionName(e.target.value)}
                   placeholder="会话名称"
-                  className="w-full px-2 py-1 text-sm rounded mb-2 outline-none"
-                  style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-primary)' }}
+                  className="mb-2"
                   onKeyDown={(e) => e.key === 'Enter' && handleCreateSession()}
                   autoFocus
                 />
-                <div className="flex gap-1">
-                  <button
-                    onClick={handleCreateSession}
-                    className="flex-1 py-1 text-xs rounded"
-                    style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
-                  >
-                    创建
-                  </button>
-                  <button
-                    onClick={() => setShowNewSession(false)}
-                    className="flex-1 py-1 text-xs rounded"
-                    style={{ backgroundColor: 'var(--border)', color: 'var(--text-secondary)' }}
-                  >
-                    取消
-                  </button>
+                <div className="flex gap-2">
+                  <Button size="sm" className="flex-1" onClick={handleCreateSession}>创建</Button>
+                  <Button size="sm" variant="secondary" className="flex-1" onClick={() => setShowNewSession(false)}>取消</Button>
                 </div>
               </div>
             )}
 
-            {/* Session list */}
             {sessions.map((session) => (
               <div
                 key={session.id}
-                className="p-2 rounded mb-1 cursor-pointer group"
+                className="group flex items-center justify-between p-2.5 rounded-[var(--radius-lg)] cursor-pointer transition-all duration-150"
                 style={{
-                  backgroundColor: currentSession?.id === session.id ? 'var(--bg-tertiary)' : 'var(--bg-primary)',
+                  backgroundColor: currentSession?.id === session.id ? 'var(--color-bg-active)' : undefined,
+                  border: currentSession?.id === session.id ? '1px solid var(--color-accent-soft)' : '1px solid transparent',
                 }}
                 onClick={() => handleLoadSession(session.id)}
+                onMouseEnter={(e) => { if (currentSession?.id !== session.id) e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)' }}
+                onMouseLeave={(e) => { if (currentSession?.id !== session.id) e.currentTarget.style.backgroundColor = '' }}
               >
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-medium truncate flex-1">{session.name}</div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id) }}
-                    className="text-xs opacity-0 group-hover:opacity-100 transition-opacity ml-2"
-                    style={{ color: 'var(--error)' }}
-                  >
-                    删除
-                  </button>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium truncate">{session.name}</div>
+                  <div className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
+                    {new Date(session.updatedAt).toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </div>
                 </div>
-                <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
-                  {new Date(session.updatedAt).toLocaleString('zh-CN')}
-                </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id) }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-[var(--radius-sm)] hover:bg-[rgba(248,113,113,0.12)]"
+                >
+                  <Trash2 size={13} className="text-[var(--color-error)]" />
+                </button>
               </div>
             ))}
 
             {sessions.length === 0 && (
-              <div className="text-center py-8 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                暂无会话，点击"+ 新建"创建
+              <div className="text-center py-12 text-sm text-[var(--color-text-muted)]">
+                暂无会话
               </div>
             )}
-          </div>
+          </>
         )}
 
         {activeTab === 'characters' && (
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>角色库</span>
-              <button
-                onClick={handleAddCharacter}
-                className="px-2 py-1 text-xs rounded"
-                style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
-              >
-                + 添加
-              </button>
+          <>
+            <div className="flex justify-between items-center mb-2 px-1.5">
+              <span className="text-[11px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">角色库</span>
+              <Button size="sm" onClick={handleAddCharacter}>
+                <Plus size={14} /> 添加
+              </Button>
             </div>
             {characters.map((char) => (
-              <div key={char.id} className="flex items-center justify-between p-2 rounded mb-1 hover:opacity-80"
-                style={{ backgroundColor: 'var(--bg-primary)' }}>
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm"
-                    style={{ backgroundColor: 'var(--accent)' }}>
-                    {char.name[0]}
-                  </div>
-                  <span className="text-sm">{char.name}</span>
+              <div
+                key={char.id}
+                className="group flex items-center justify-between p-2.5 rounded-[var(--radius-lg)] transition-all duration-150 hover:bg-[var(--color-bg-hover)]"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <Avatar name={char.name} size="sm" />
+                  <span className="text-sm truncate">{char.name}</span>
                 </div>
                 <button
                   onClick={() => removeCharacter(char.id)}
-                  className="text-xs opacity-50 hover:opacity-100"
-                  style={{ color: 'var(--error)' }}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-[var(--radius-sm)] hover:bg-[rgba(248,113,113,0.12)]"
                 >
-                  删除
+                  <Trash2 size={13} className="text-[var(--color-error)]" />
                 </button>
               </div>
             ))}
             {characters.length === 0 && (
-              <div className="text-center py-8 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                暂无角色，点击"添加"创建
+              <div className="text-center py-12 text-sm text-[var(--color-text-muted)]">
+                暂无角色
               </div>
             )}
-          </div>
+          </>
         )}
 
         {activeTab === 'settings' && (
-          <div>
-            <div className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>API 配置</div>
-            <div className="p-3 rounded" style={{ backgroundColor: 'var(--bg-primary)' }}>
-              <div className="text-xs mb-2" style={{ color: 'var(--text-secondary)' }}>
-                配置将在后续版本中完善
-              </div>
+          <div className="p-4 rounded-[var(--radius-lg)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)]">
+            <div className="text-xs text-[var(--color-text-muted)]">
+              API 配置将在后续版本中完善
             </div>
           </div>
         )}

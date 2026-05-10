@@ -4,14 +4,17 @@ import { useSessionStore } from '@/stores/sessionStore'
 import { useCharacterStore } from '@/stores/characterStore'
 import MessageBubble from '../chat/MessageBubble'
 import MessageInput from '../chat/MessageInput'
-import { v4 as uuidv4 } from 'uuid'
+import Badge from '@/components/ui/Badge'
+import Button from '@/components/ui/Button'
+import { PanelRightOpen, PanelRightClose } from 'lucide-react'
 
 interface ChatAreaProps {
   onToggleRightPanel: () => void
+  rightPanelOpen: boolean
 }
 
-export default function ChatArea({ onToggleRightPanel }: ChatAreaProps) {
-  const { messages, isGenerating, streamingContent, generatingAgentId, addMessage, setStreaming, appendToStreaming } = useChatStore()
+export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAreaProps) {
+  const { messages, isGenerating, streamingContent, generatingAgentId, addMessage } = useChatStore()
   const { currentSession, setMode, setUserRole } = useSessionStore()
   const { characters } = useCharacterStore()
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -21,7 +24,6 @@ export default function ChatArea({ onToggleRightPanel }: ChatAreaProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, streamingContent])
 
-  // Auto-save messages to session
   useEffect(() => {
     if (currentSession && messages.length > 0) {
       useSessionStore.getState().updateSession({ messages })
@@ -30,7 +32,6 @@ export default function ChatArea({ onToggleRightPanel }: ChatAreaProps) {
 
   const handleSendMessage = (content: string) => {
     if (!content.trim()) return
-
     const speakerId = currentSession?.userRole === 'gm' ? 'gm' : selectedSpeakerId
     const speakerName = speakerId === 'gm'
       ? 'GM'
@@ -55,7 +56,6 @@ export default function ChatArea({ onToggleRightPanel }: ChatAreaProps) {
     if (currentSession) {
       const newMode = currentSession.mode === 'gm-led' ? 'free-chat' : 'gm-led'
       setMode(newMode)
-      // Switching to free-chat forces player role; switching to gm-led sets GM role
       if (newMode === 'free-chat') {
         setUserRole('player')
       } else {
@@ -68,7 +68,6 @@ export default function ChatArea({ onToggleRightPanel }: ChatAreaProps) {
     if (currentSession) {
       const newRole = currentSession.userRole === 'gm' ? 'player' : 'gm'
       setUserRole(newRole)
-      // If switching to GM, auto-switch to gm-led mode
       if (newRole === 'gm' && currentSession.mode !== 'gm-led') {
         setMode('gm-led')
       }
@@ -76,56 +75,46 @@ export default function ChatArea({ onToggleRightPanel }: ChatAreaProps) {
   }
 
   return (
-    <div className="flex-1 flex flex-col min-w-0">
+    <div className="flex-1 flex flex-col min-w-0 bg-[var(--color-bg-primary)]">
       {/* Header */}
-      <div className="title-bar-drag h-12 flex items-center justify-between px-4 border-b"
-        style={{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border)' }}>
-        <div className="flex items-center gap-3 title-bar-no-drag">
-          <span className="font-medium">
+      <div className="title-bar-drag h-13 flex items-center justify-between px-4 border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
+        <div className="flex items-center gap-2.5 title-bar-no-drag">
+          <span className="font-semibold text-sm">
             {currentSession?.name || '未命名会话'}
           </span>
           {currentSession && (
-            <span className="text-xs px-2 py-0.5 rounded"
-              style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}>
+            <Badge variant={currentSession.mode === 'gm-led' ? 'gm' : 'accent'}>
               {currentSession.mode === 'gm-led' ? 'GM 主导' : '自由群聊'}
-            </span>
+            </Badge>
           )}
         </div>
-        <div className="flex items-center gap-2 title-bar-no-drag">
-          <button
-            onClick={handleModeToggle}
-            className="px-3 py-1 text-xs rounded"
-            style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}
-          >
-            {currentSession?.mode === 'gm-led' ? '切换自由模式' : '切换GM模式'}
-          </button>
-          <button
+        <div className="flex items-center gap-1.5 title-bar-no-drag">
+          <Button size="sm" variant="secondary" onClick={handleModeToggle}>
+            {currentSession?.mode === 'gm-led' ? '自由模式' : 'GM模式'}
+          </Button>
+          <Button
+            size="sm"
+            variant={currentSession?.userRole === 'gm' ? 'default' : 'secondary'}
             onClick={handleRoleToggle}
-            className="px-3 py-1 text-xs rounded"
-            style={{
-              backgroundColor: currentSession?.userRole === 'gm' ? 'var(--accent)' : 'var(--bg-tertiary)',
-              color: currentSession?.userRole === 'gm' ? '#fff' : 'var(--text-secondary)',
-            }}
           >
-            {currentSession?.userRole === 'gm' ? 'GM 模式' : '玩家模式'}
-          </button>
-          <button
-            onClick={onToggleRightPanel}
-            className="px-2 py-1 text-xs rounded"
-            style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}
-          >
-            面板
-          </button>
+            {currentSession?.userRole === 'gm' ? 'GM' : '玩家'}
+          </Button>
+          <div className="w-px h-5 bg-[var(--color-border)] mx-1" />
+          <Button size="sm" variant="ghost" onClick={onToggleRightPanel}>
+            {rightPanelOpen ? <PanelRightClose size={16} /> : <PanelRightOpen size={16} />}
+          </Button>
         </div>
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="flex-1 overflow-y-auto px-4 py-3">
         {messages.length === 0 && !isGenerating && (
-          <div className="flex flex-col items-center justify-center h-full opacity-50">
-            <div className="text-4xl mb-4">🎭</div>
-            <div className="text-lg mb-2">开始你的故事</div>
-            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          <div className="flex flex-col items-center justify-center h-full">
+            <div className="w-16 h-16 rounded-[var(--radius-xl)] bg-[var(--color-accent-soft)] flex items-center justify-center mb-4">
+              <span className="text-3xl">🎭</span>
+            </div>
+            <div className="text-lg font-semibold mb-1">开始你的故事</div>
+            <div className="text-sm text-[var(--color-text-muted)]">
               {currentSession ? '发送消息开始对话' : '请先创建一个会话'}
             </div>
           </div>
