@@ -1,21 +1,48 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useCharacterStore } from '@/stores/characterStore'
+import { useChatStore } from '@/stores/chatStore'
 
 type SidebarTab = 'sessions' | 'characters' | 'settings'
 
 export default function Sidebar() {
   const [activeTab, setActiveTab] = useState<SidebarTab>('sessions')
-  const { currentSession, sessions, createSession, setCurrentSession } = useSessionStore()
-  const { characters, addCharacter, removeCharacter } = useCharacterStore()
+  const {
+    currentSession, sessions,
+    createSession, loadSession, deleteSession,
+    loadSessionList,
+  } = useSessionStore()
+  const { characters, addCharacter, removeCharacter, loadCharacters } = useCharacterStore()
+  const { setMessages } = useChatStore()
   const [showNewSession, setShowNewSession] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
+
+  // Load data on mount
+  useEffect(() => {
+    loadSessionList()
+    loadCharacters()
+  }, [])
 
   const handleCreateSession = () => {
     if (newSessionName.trim()) {
       createSession(newSessionName.trim())
       setNewSessionName('')
       setShowNewSession(false)
+    }
+  }
+
+  const handleLoadSession = async (id: string) => {
+    await loadSession(id)
+    // Load messages into chat store
+    const session = useSessionStore.getState().currentSession
+    if (session) {
+      setMessages(session.messages)
+    }
+  }
+
+  const handleDeleteSession = async (id: string) => {
+    if (confirm('确定删除这个会话吗？')) {
+      await deleteSession(id)
     }
   }
 
@@ -112,12 +139,35 @@ export default function Sidebar() {
               </div>
             )}
 
-            {currentSession && (
-              <div className="p-2 rounded mb-2" style={{ backgroundColor: 'var(--bg-tertiary)' }}>
-                <div className="text-sm font-medium">{currentSession.name}</div>
-                <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
-                  {currentSession.characters.length} 个角色 · {currentSession.messages.length} 条消息
+            {/* Session list */}
+            {sessions.map((session) => (
+              <div
+                key={session.id}
+                className="p-2 rounded mb-1 cursor-pointer group"
+                style={{
+                  backgroundColor: currentSession?.id === session.id ? 'var(--bg-tertiary)' : 'var(--bg-primary)',
+                }}
+                onClick={() => handleLoadSession(session.id)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="text-sm font-medium truncate flex-1">{session.name}</div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id) }}
+                    className="text-xs opacity-0 group-hover:opacity-100 transition-opacity ml-2"
+                    style={{ color: 'var(--error)' }}
+                  >
+                    删除
+                  </button>
                 </div>
+                <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
+                  {new Date(session.updatedAt).toLocaleString('zh-CN')}
+                </div>
+              </div>
+            ))}
+
+            {sessions.length === 0 && (
+              <div className="text-center py-8 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                暂无会话，点击"+ 新建"创建
               </div>
             )}
           </div>

@@ -21,6 +21,13 @@ export default function ChatArea({ onToggleRightPanel }: ChatAreaProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, streamingContent])
 
+  // Auto-save messages to session
+  useEffect(() => {
+    if (currentSession && messages.length > 0) {
+      useSessionStore.getState().updateSession({ messages })
+    }
+  }, [messages])
+
   const handleSendMessage = (content: string) => {
     if (!content.trim()) return
 
@@ -46,13 +53,25 @@ export default function ChatArea({ onToggleRightPanel }: ChatAreaProps) {
 
   const handleModeToggle = () => {
     if (currentSession) {
-      setMode(currentSession.mode === 'gm-led' ? 'free-chat' : 'gm-led')
+      const newMode = currentSession.mode === 'gm-led' ? 'free-chat' : 'gm-led'
+      setMode(newMode)
+      // Switching to free-chat forces player role; switching to gm-led sets GM role
+      if (newMode === 'free-chat') {
+        setUserRole('player')
+      } else {
+        setUserRole('gm')
+      }
     }
   }
 
   const handleRoleToggle = () => {
     if (currentSession) {
-      setUserRole(currentSession.userRole === 'gm' ? 'player' : 'gm')
+      const newRole = currentSession.userRole === 'gm' ? 'player' : 'gm'
+      setUserRole(newRole)
+      // If switching to GM, auto-switch to gm-led mode
+      if (newRole === 'gm' && currentSession.mode !== 'gm-led') {
+        setMode('gm-led')
+      }
     }
   }
 
