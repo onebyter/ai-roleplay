@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from 'react'
 import { useChatStore } from '@/stores/chatStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useCharacterStore } from '@/stores/characterStore'
+import { useSettingsStore } from '@/stores/settingsStore'
+import { streamChat, buildCharacterPrompt, buildMessagesForAgent } from '@/utils/llm-client'
 import MessageBubble from '../chat/MessageBubble'
 import MessageInput from '../chat/MessageInput'
 import Badge from '@/components/ui/Badge'
@@ -17,6 +19,7 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
   const { messages, isGenerating, streamingContent, generatingAgentId, addMessage } = useChatStore()
   const { currentSession, setMode, setUserRole } = useSessionStore()
   const { characters } = useCharacterStore()
+  const { apiConfigs, selectedConfigId } = useSettingsStore()
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const sessionIdRef = useRef<string | undefined>(currentSession?.id)
   const isMessageLoadingRef = useRef(false)
@@ -44,9 +47,9 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
     }
   }, [messages])
 
-  const handleSendMessage = (content: string) => {
-    if (!content.trim()) return
-    const speakerId = currentSession?.userRole === 'gm' ? 'gm' : selectedSpeakerId
+  const handleSendMessage = async (content: string) => {
+    if (!content.trim() || !currentSession) return
+    const speakerId = currentSession.userRole === 'gm' ? 'gm' : selectedSpeakerId
     const speakerName = speakerId === 'gm'
       ? 'GM'
       : speakerId === 'user'
@@ -54,7 +57,7 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
         : characters.find(c => c.id === speakerId)?.name || '未知'
 
     addMessage({
-      sessionId: currentSession?.id || '',
+      sessionId: currentSession.id,
       characterId: speakerId,
       characterName: speakerName,
       content: content.trim(),
@@ -64,6 +67,35 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
         turnNumber: messages.length + 1,
       },
     })
+
+    // 触发会话中的 AI 角色回复
+    const sessionChars = currentSession.characters
+    const respondingChars = sessionChars.filter(c => c.id !== speakerId && c.id !== 'user')
+    for (const char of respondingChars) {
+      const providerId = char.agentConfig?.provider || selectedConfigId
+      const apiConfig = apiConfigs.find(c => c.id === providerId)
+      if (!apiConfig || !apiConfig.apiKey) continue
+
+      const model = char.agentConfig?.model || apiConfig.models[0]
+      const chatConfig = { ...apiConfig, models: [model] }
+
+      useChatStore.getState().setStreaming(true, char.id)
+
+      try {
+        const systemPrompt = buildCharacterPrompt(char, currentSession.worldSetting.description)
+        const history = buildMessagesForAgent(useChatStore.getState().messages, 20)
+        let fullContent = ''
+
+        for await (const chunk of streamChat(chatConfig, systemPrompt, history, char.id)) {
+          fullContent += chunk
+          useChatStore.getState().appendToStreaming(chunk)
+        }
+
+        useChatStore.getState().finishStreaming(char.id, fullContent)
+      } catch {
+        useChatStore.getState().setStreaming(false)
+      }
+    }
   }
 
   const handleModeToggle = () => {
