@@ -18,13 +18,27 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
   const { currentSession, setMode, setUserRole } = useSessionStore()
   const { characters } = useCharacterStore()
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const sessionIdRef = useRef<string | undefined>(currentSession?.id)
+  const isMessageLoadingRef = useRef(false)
   const [selectedSpeakerId, setSelectedSpeakerId] = useState<string>('user')
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, streamingContent])
 
+  // 会话切换时标记为加载状态，跳过自动保存避免无操作更新 updatedAt
   useEffect(() => {
+    if (currentSession?.id !== sessionIdRef.current) {
+      sessionIdRef.current = currentSession?.id
+      isMessageLoadingRef.current = true
+    }
+  }, [currentSession?.id])
+
+  useEffect(() => {
+    if (isMessageLoadingRef.current) {
+      isMessageLoadingRef.current = false
+      return
+    }
     if (currentSession && messages.length > 0) {
       useSessionStore.getState().updateSession({ messages })
     }

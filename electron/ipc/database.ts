@@ -109,7 +109,7 @@ export function setupDatabaseIPC() {
 
   ipcMain.handle('db:listSessions', async () => {
     const database = await getDB()
-    const stmt = database.prepare('SELECT id, name, created_at, updated_at FROM sessions ORDER BY updated_at DESC')
+    const stmt = database.prepare('SELECT id, name, created_at as createdAt, updated_at as updatedAt FROM sessions ORDER BY updated_at DESC')
     const results: any[] = []
     while (stmt.step()) {
       results.push(stmt.getAsObject())

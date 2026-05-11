@@ -46,7 +46,7 @@ src/utils/llm-client.ts
 
 ### v0.1.1 - Bug Fixes (2026-05-10)
 
-**状态**: 待回归验证
+**状态**: 已完成
 
 **修复内容**:
 
@@ -58,6 +58,24 @@ src/utils/llm-client.ts
 - [X] 替换 better-sqlite3 为 sql.js（解决 Electron Node 版本不匹配问题）
 
 **回归验证**: 见 testing.md T-007 ~ T-009
+
+---
+
+### v0.1.2 - 工程基础设施 (2026-05-11)
+
+**状态**: 已完成
+
+**完成内容**:
+
+- [X] CLAUDE.md — 项目架构文档、开发规范、skill 使用流程
+- [X] `docs/design-spec.md` — 基于 Cherry Studio 分析的完整设计规格（亮/暗双主题色板、组件规格、动效规范）
+- [X] Vitest 测试框架搭建（vitest.config.ts + jsdom + @testing-library/react）
+- [X] 示例单元测试 `src/stores/chatStore.test.ts`（5 个用例，全部通过）
+- [X] `docs/test-cases.xlsx` — 结构化测试用例管理（v0.1.0 28 条 + v0.1.1 12 条），汇总 Sheet 自动统计
+- [X] `docs/testing.md` — 精简为测试流程说明 + 模板
+- [X] `docs/requirements.md` — 修正过时色值和技术栈描述
+
+**构建状态**: 编译通过，5/5 测试通过
 
 ---
 
@@ -163,4 +181,4 @@ Phase 6 [░░░░░░░░░░]   0% - 小说导入 & 打磨
 Phase 7 [░░░░░░░░░░]   0% - 测试 & 发布
 ```
 
-**总体进度**: ~14%
+**总体进度**: ~18%
