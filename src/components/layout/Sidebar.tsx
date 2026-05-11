@@ -6,6 +6,7 @@ import { useSettingsStore } from '@/stores/settingsStore'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Avatar from '@/components/ui/Avatar'
+import ApiConfigPanel from '@/components/settings/ApiConfigPanel'
 import { MessageSquare, Users, Settings, Plus, Trash2 } from 'lucide-react'
 
 type SidebarTab = 'sessions' | 'characters' | 'settings'
@@ -226,6 +227,7 @@ export default function Sidebar() {
                 ))}
               </div>
             </div>
+            <ApiConfigPanel />
           </div>
         )}
       </div>
