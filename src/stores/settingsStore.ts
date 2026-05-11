@@ -15,10 +15,18 @@ interface SettingsState {
   setTheme: (theme: 'dark' | 'light') => void
 }
 
+function getInitialTheme(): 'dark' | 'light' {
+  try {
+    const saved = localStorage.getItem('theme')
+    if (saved === 'light' || saved === 'dark') return saved
+  } catch {}
+  return 'dark'
+}
+
 export const useSettingsStore = create<SettingsState>((set) => ({
   apiConfigs: DEFAULT_API_CONFIGS,
   selectedConfigId: 'deepseek',
-  theme: 'dark',
+  theme: getInitialTheme(),
   language: 'zh',
 
   addAPIConfig: (config) =>
