@@ -75,7 +75,7 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
       const providerId = (char.agentConfig?.provider && char.agentConfig.provider !== 'default')
         ? char.agentConfig.provider
         : selectedConfigId
-      const apiConfig = apiConfigs.find(c => c.id === providerId)
+      const apiConfig = apiConfigs.find(c => c.id.toLowerCase() === providerId.toLowerCase())
       console.log('[ChatArea] checking char:', char.name, 'providerId:', providerId, 'found:', !!apiConfig, 'hasKey:', !!apiConfig?.apiKey)
       if (!apiConfig || !apiConfig.apiKey) {
         if (!apiConfig) {

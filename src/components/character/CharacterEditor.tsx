@@ -80,7 +80,16 @@ export default function CharacterEditor({ characterId, onClose }: CharacterEdito
         <div className="grid grid-cols-3 gap-3">
           <div>
             <label className="text-[11px] text-[var(--color-text-muted)] mb-1 block">API 提供商</label>
-            <Input placeholder="如：deepseek" value={form.agentConfig?.provider || ''} onChange={(e) => updateField('agentConfig', { ...form.agentConfig, provider: e.target.value })} />
+            <select
+              value={form.agentConfig?.provider || ''}
+              onChange={(e) => updateField('agentConfig', { ...form.agentConfig, provider: e.target.value })}
+              className="h-8 w-full rounded-[var(--radius-md)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] px-3 text-sm text-[var(--color-text-primary)] transition-all duration-150 focus:border-[var(--color-accent)] focus:outline-none cursor-pointer"
+            >
+              <option value="">使用全局默认</option>
+              {apiConfigs.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="text-[11px] text-[var(--color-text-muted)] mb-1 block">模型</label>
