@@ -28,6 +28,12 @@ describe('buildCharacterPrompt', () => {
     expect(prompt).toContain('以 Alice 的身份发言')
     expect(prompt).toContain('使用中文回复')
   })
+
+  it('包含用户自定义的系统提示词', () => {
+    const prompt = buildCharacterPrompt(char, 'world')
+    expect(prompt).toContain('Always be brave')
+    expect(prompt).toContain('核心指令')
+  })
 })
 
 describe('buildMessagesForAgent', () => {

@@ -68,6 +68,14 @@ export function buildCharacterPrompt(
     )
   }
 
+  if (character.systemPrompt) {
+    parts.push(
+      ``,
+      `## 核心指令（最高优先级）`,
+      character.systemPrompt
+    )
+  }
+
   if (character.exampleDialogue) {
     parts.push(
       ``,
