@@ -162,8 +162,10 @@ export default function Sidebar() {
             ))}
 
             {sessions.length === 0 && (
-              <div className="text-center py-12 text-sm text-[var(--color-text-muted)]">
-                暂无会话
+              <div className="flex flex-col items-center py-12">
+                <MessageSquare size={24} className="text-[var(--color-text-muted)] opacity-40 mb-2" />
+                <div className="text-sm text-[var(--color-text-muted)]">暂无会话</div>
+                <div className="text-[11px] text-[var(--color-text-muted)] opacity-60 mt-0.5">点击右上角按钮创建</div>
               </div>
             )}
           </>
@@ -187,7 +189,7 @@ export default function Sidebar() {
                   <Avatar name={char.name} size="sm" />
                   <span className="text-sm truncate">{char.name}</span>
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
                   {currentSession && (
                     <button
                       onClick={(e) => {
@@ -210,8 +212,10 @@ export default function Sidebar() {
               </div>
             ))}
             {characters.length === 0 && (
-              <div className="text-center py-12 text-sm text-[var(--color-text-muted)]">
-                暂无角色
+              <div className="flex flex-col items-center py-12">
+                <Users size={24} className="text-[var(--color-text-muted)] opacity-40 mb-2" />
+                <div className="text-sm text-[var(--color-text-muted)]">暂无角色</div>
+                <div className="text-[11px] text-[var(--color-text-muted)] opacity-60 mt-0.5">点击右上角按钮添加</div>
               </div>
             )}
           </>

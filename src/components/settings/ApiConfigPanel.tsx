@@ -206,11 +206,11 @@ export default function ApiConfigPanel() {
                 <div className="flex gap-1">
                   <Button size="sm" variant="secondary" onClick={handleFetchModels} disabled={fetchingModels}>
                     {fetchingModels ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-                    <span className="text-[10px]">获取</span>
+                    <span className="text-[11px]">获取</span>
                   </Button>
                   <Button size="sm" variant="secondary" onClick={handleTestConnection} disabled={testingConn === editingId || form.models.length === 0}>
                     {testingConn === editingId ? <Loader2 size={12} className="animate-spin" /> : <Wifi size={12} />}
-                    <span className="text-[10px]">测试</span>
+                    <span className="text-[11px]">测试</span>
                   </Button>
                 </div>
               </div>

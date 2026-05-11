@@ -33,9 +33,13 @@ export default function RightPanel() {
           >
             {tab.icon}
             {tab.label}
-            {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--color-accent)] rounded-t-full" />
-            )}
+            <span
+              className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--color-accent)] rounded-t-full transition-all duration-200 ease-out"
+              style={{
+                opacity: activeTab === tab.id ? 1 : 0,
+                transform: activeTab === tab.id ? 'scaleX(1)' : 'scaleX(0.5)',
+              }}
+            />
           </button>
         ))}
       </div>
@@ -49,13 +53,13 @@ export default function RightPanel() {
               <div className="space-y-3">
                 <div>
                   <label className="text-[11px] text-[var(--color-text-muted)] mb-1.5 block px-1">世界名称</label>
-                  <div className="text-sm px-3 py-2 rounded-[var(--radius-md)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)]">
+                  <div className="text-sm px-3 py-2 rounded-[var(--radius-md)] bg-[var(--color-bg-secondary)]">
                     {currentSession.worldSetting.name}
                   </div>
                 </div>
                 <div>
                   <label className="text-[11px] text-[var(--color-text-muted)] mb-1.5 block px-1">世界描述</label>
-                  <div className="text-sm px-3 py-2 rounded-[var(--radius-md)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] leading-relaxed">
+                  <div className="text-sm px-3 py-2 rounded-[var(--radius-md)] bg-[var(--color-bg-secondary)] leading-relaxed">
                     {currentSession.worldSetting.description}
                   </div>
                 </div>
@@ -135,7 +139,7 @@ export default function RightPanel() {
                 ['消息数', String(currentSession.messages.length)],
                 ['角色数', String(currentSession.characters.length)],
               ].map(([label, value]) => (
-                <div key={label} className="flex justify-between px-1 py-1.5 rounded-[var(--radius-sm)] bg-[var(--color-bg-tertiary)] px-2.5">
+                <div key={label} className="flex justify-between px-2.5 py-1.5 rounded-[var(--radius-sm)] bg-[var(--color-bg-tertiary)]">
                   <span className="text-[var(--color-text-muted)]">{label}</span>
                   <span className="font-medium">{value}</span>
                 </div>

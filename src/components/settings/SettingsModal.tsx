@@ -15,6 +15,11 @@ const NAV_ITEMS: { id: SettingsNav; label: string; icon: React.ReactNode }[] = [
   { id: 'api', label: 'API 配置', icon: <Server size={15} /> },
 ]
 
+const THEME_PREVIEW: Record<string, { bg: string; text: string; blocks: string[] }> = {
+  dark:  { bg: '#16161e', text: '#f0f0f5', blocks: ['#1e1e2a', '#252533', '#7c6cff'] },
+  light: { bg: '#f5f5f7', text: '#1b1b1f', blocks: ['#e8e8ed', '#fafafa', '#d1d1d6'] },
+}
+
 export default function SettingsModal({ onClose }: SettingsModalProps) {
   const [activeNav, setActiveNav] = useState<SettingsNav>('appearance')
   const theme = useSettingsStore((s) => s.theme)
@@ -78,18 +83,18 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                       onClick={() => useSettingsStore.getState().setTheme(t)}
                       className="flex-1 p-4 rounded-[var(--radius-lg)] border-2 transition-all duration-150"
                       style={{
-                        backgroundColor: t === 'dark' ? '#16161e' : '#f5f5f7',
+                        backgroundColor: THEME_PREVIEW[t].bg,
                         borderColor: theme === t ? 'var(--color-accent)' : 'var(--color-border)',
                         boxShadow: theme === t ? 'var(--shadow-accent)' : 'none',
                       }}
                     >
-                      <div className="text-xs font-medium mb-2" style={{ color: t === 'dark' ? '#f0f0f5' : '#1b1b1f' }}>
+                      <div className="text-xs font-medium mb-2" style={{ color: THEME_PREVIEW[t].text }}>
                         {t === 'dark' ? '深色模式' : '浅色模式'}
                       </div>
                       <div className="flex gap-1.5">
-                        <div className="w-8 h-6 rounded-sm" style={{ backgroundColor: t === 'dark' ? '#1e1e2a' : '#e8e8ed' }} />
-                        <div className="w-8 h-6 rounded-sm" style={{ backgroundColor: t === 'dark' ? '#252533' : '#fafafa' }} />
-                        <div className="w-8 h-6 rounded-sm" style={{ backgroundColor: 'var(--color-accent)', opacity: 0.6 }} />
+                        {THEME_PREVIEW[t].blocks.map((c, i) => (
+                          <div key={i} className="w-8 h-6 rounded-sm" style={{ backgroundColor: c, opacity: i === 2 ? 0.6 : 1 }} />
+                        ))}
                       </div>
                     </button>
                   ))}
