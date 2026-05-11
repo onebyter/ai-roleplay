@@ -29,7 +29,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center rounded-[var(--radius-md)] font-medium transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none cursor-pointer',
+        'inline-flex items-center justify-center rounded-[var(--radius-md)] font-medium transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none disabled:cursor-not-allowed cursor-pointer active:scale-[0.97]',
         variantStyles[variant],
         sizeStyles[size],
         className

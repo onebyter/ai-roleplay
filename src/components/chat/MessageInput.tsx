@@ -99,7 +99,7 @@ export default function MessageInput({
           <Button
             onClick={handleSend}
             disabled={!content.trim() || isGenerating}
-            className="h-[36px] w-[36px] p-0 rounded-[var(--radius-lg)]"
+            className="h-[36px] w-[36px] p-0 rounded-full"
           >
             <Send size={15} />
           </Button>

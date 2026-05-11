@@ -19,7 +19,7 @@ export default function ApiConfigPanel() {
   const startAdd = () => {
     setForm({ name: '', baseURL: '', apiKey: '', models: [] })
     setEditingId('__new__')
-    setStatusMsg('')
+    setStatusMsg(''); setStatusType('')
     setNewModel('')
   }
 
@@ -27,7 +27,7 @@ export default function ApiConfigPanel() {
     setSelectedConfig(config.id)
     setForm({ name: config.name, baseURL: config.baseURL, apiKey: config.apiKey, models: [...config.models] })
     setEditingId(config.id)
-    setStatusMsg('')
+    setStatusMsg(''); setStatusType('')
     setNewModel('')
   }
 
@@ -42,7 +42,7 @@ export default function ApiConfigPanel() {
 
   const handleCancel = () => {
     setEditingId(null)
-    setStatusMsg('')
+    setStatusMsg(''); setStatusType('')
   }
 
   const addModel = () => {
@@ -59,11 +59,11 @@ export default function ApiConfigPanel() {
 
   const handleFetchModels = async () => {
     if (!form.baseURL || !form.apiKey) {
-      setStatusMsg('请先填写 Base URL 和 API Key')
+      showStatus('请先填写 Base URL 和 API Key', 'error')
       return
     }
     setFetchingModels(true)
-    setStatusMsg('')
+    setStatusMsg(''); setStatusType('')
     try {
       const result = await window.electronAPI.llm.fetchModels({
         baseURL: form.baseURL.replace(/\/+$/, ''),
@@ -71,23 +71,23 @@ export default function ApiConfigPanel() {
       })
       if (result.success && result.models) {
         setForm({ ...form, models: result.models })
-        setStatusMsg(`获取成功，${result.models.length} 个模型`)
+        showStatus(`获取成功，${result.models.length} 个模型`, 'success')
       } else {
-        setStatusMsg(`获取失败: ${result.error}`)
+        showStatus(`获取失败: ${result.error}`, 'error')
       }
     } catch (err: any) {
-      setStatusMsg(`获取失败: ${err.message}`)
+      showStatus(`获取失败: ${err.message}`, 'error')
     }
     setFetchingModels(false)
   }
 
   const handleTestConnection = async () => {
     if (!form.baseURL || !form.apiKey || form.models.length === 0) {
-      setStatusMsg('请填写 Base URL、API Key 和至少一个模型')
+      showStatus('请填写 Base URL、API Key 和至少一个模型', 'error')
       return
     }
     setTestingConn(editingId || '__test__')
-    setStatusMsg('')
+    setStatusMsg(''); setStatusType('')
     try {
       const result = await window.electronAPI.llm.testConnection({
         baseURL: form.baseURL.replace(/\/+$/, ''),
@@ -95,12 +95,12 @@ export default function ApiConfigPanel() {
         model: form.models[0],
       })
       if (result.success) {
-        setStatusMsg('连接成功')
+        showStatus('连接成功', 'success')
       } else {
-        setStatusMsg(`连接失败: ${result.error}`)
+        showStatus(`连接失败: ${result.error}`, 'error')
       }
     } catch (err: any) {
-      setStatusMsg(`连接失败: ${err.message}`)
+      showStatus(`连接失败: ${err.message}`, 'error')
     }
     setTestingConn(null)
   }
@@ -182,8 +182,8 @@ export default function ApiConfigPanel() {
 
             {statusMsg && (
               <div className="px-3 py-2 rounded-[var(--radius-md)] text-xs font-medium" style={{
-                backgroundColor: statusMsg.includes('成功') ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)',
-                color: statusMsg.includes('成功') ? 'var(--color-success)' : 'var(--color-error)',
+                backgroundColor: statusType === 'success' ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.1)',
+                color: statusType === 'success' ? 'var(--color-success)' : 'var(--color-error)',
               }}>{statusMsg}</div>
             )}
 

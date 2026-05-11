@@ -139,14 +139,12 @@ export default function Sidebar() {
             {sessions.map((session) => (
               <div
                 key={session.id}
-                className="group flex items-center justify-between p-2.5 rounded-[var(--radius-lg)] cursor-pointer transition-all duration-150"
+                className="group flex items-center justify-between p-2.5 rounded-[var(--radius-lg)] cursor-pointer transition-all duration-150 hover:bg-[var(--color-bg-hover)]"
                 style={{
                   backgroundColor: currentSession?.id === session.id ? 'var(--color-bg-active)' : undefined,
                   border: currentSession?.id === session.id ? '1px solid var(--color-accent-soft)' : '1px solid transparent',
                 }}
                 onClick={() => handleLoadSession(session.id)}
-                onMouseEnter={(e) => { if (currentSession?.id !== session.id) e.currentTarget.style.backgroundColor = 'var(--color-bg-hover)' }}
-                onMouseLeave={(e) => { if (currentSession?.id !== session.id) e.currentTarget.style.backgroundColor = '' }}
               >
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium truncate">{session.name}</div>

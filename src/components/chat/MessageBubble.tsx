@@ -31,7 +31,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
   if (isSystem) {
     return (
-      <div className="flex justify-center my-3">
+      <div className="flex justify-center my-3" style={{ animation: 'fadeInUp 0.3s ease-out' }}>
         <span className="text-[11px] px-3 py-1 rounded-[var(--radius-full)] bg-[var(--color-bg-elevated)] text-[var(--color-text-muted)] border border-[var(--color-border)]">
           {message.content}
         </span>

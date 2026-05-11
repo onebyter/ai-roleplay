@@ -26,9 +26,10 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
   }, [onClose])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg-overlay)', animation: 'fadeIn 0.15s ease-out' }} onClick={onClose}>
       <div
-        className="w-[820px] h-[520px] flex rounded-[var(--radius-xl)] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-[var(--shadow-lg)] overflow-hidden"
+        className="w-[760px] h-[520px] flex rounded-[var(--radius-xl)] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-[var(--shadow-lg)] overflow-hidden"
+        style={{ animation: 'slideInUp 0.25s ease-out' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Left nav */}

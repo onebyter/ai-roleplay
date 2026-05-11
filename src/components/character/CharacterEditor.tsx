@@ -32,8 +32,8 @@ export default function CharacterEditor({ characterId, onClose }: CharacterEdito
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
-      <div className="w-[520px] max-h-[85vh] overflow-y-auto rounded-[var(--radius-xl)] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-[var(--shadow-lg)] p-5 space-y-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'var(--color-bg-overlay)', animation: 'fadeIn 0.15s ease-out' }}>
+      <div className="w-[520px] max-h-[85vh] overflow-y-auto rounded-[var(--radius-xl)] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-[var(--shadow-lg)] p-5 space-y-4" style={{ animation: 'slideInUp 0.25s ease-out' }}>
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold">{characterId ? '编辑角色' : '新建角色'}</h2>
           <Button variant="ghost" size="sm" onClick={onClose}><X size={16} /></Button>
@@ -83,7 +83,7 @@ export default function CharacterEditor({ characterId, onClose }: CharacterEdito
             <select
               value={form.agentConfig?.provider || ''}
               onChange={(e) => updateField('agentConfig', { ...form.agentConfig, provider: e.target.value })}
-              className="h-8 w-full rounded-[var(--radius-md)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] px-3 text-sm text-[var(--color-text-primary)] transition-all duration-150 focus:border-[var(--color-accent)] focus:outline-none cursor-pointer"
+              className="h-8 w-full rounded-[var(--radius-md)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] px-3 text-sm text-[var(--color-text-primary)] transition-all duration-150 focus:border-[var(--color-accent)] focus:shadow-[var(--shadow-accent)] focus:outline-none cursor-pointer"
             >
               <option value="">使用全局默认</option>
               {apiConfigs.map((c) => (
