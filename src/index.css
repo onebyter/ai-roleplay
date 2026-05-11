@@ -1,41 +1,41 @@
 @import "tailwindcss";
 
 @theme {
-  /* Background - lighter, more modern dark theme */
-  --color-bg-primary: #0f0f14;
-  --color-bg-secondary: #16161e;
-  --color-bg-tertiary: #1e1e2a;
-  --color-bg-elevated: #252533;
-  --color-bg-hover: #2a2a3a;
-  --color-bg-active: #32324a;
+  /* Background */
+  --color-bg-primary: #0d0d12;
+  --color-bg-secondary: #131318;
+  --color-bg-tertiary: #1a1a22;
+  --color-bg-elevated: #22222d;
+  --color-bg-hover: #2a2a38;
+  --color-bg-active: #323244;
 
-  /* Text - brighter, better contrast */
-  --color-text-primary: #f0f0f5;
-  --color-text-secondary: #a0a0b8;
-  --color-text-muted: #6b6b82;
+  /* Text */
+  --color-text-primary: #f4f4f9;
+  --color-text-secondary: #a5a5b8;
+  --color-text-muted: #676780;
 
-  /* Accent - vibrant purple-blue */
+  /* Accent */
   --color-accent: #7c6cff;
   --color-accent-hover: #6a5ae0;
-  --color-accent-soft: rgba(124, 108, 255, 0.15);
-  --color-accent-glow: rgba(124, 108, 255, 0.25);
+  --color-accent-soft: rgba(124, 108, 255, 0.12);
+  --color-accent-glow: rgba(124, 108, 255, 0.2);
 
-  /* Borders - visible but subtle */
-  --color-border: #2a2a3a;
-  --color-border-subtle: #22222e;
+  /* Borders */
+  --color-border: #252533;
+  --color-border-subtle: #1e1e2a;
 
-  /* Semantic colors - more vivid */
+  /* Semantic */
   --color-success: #34d399;
   --color-warning: #fbbf24;
   --color-error: #f87171;
   --color-info: #60a5fa;
 
-  /* GM - rose pink */
+  /* GM */
   --color-gm: #f472b6;
-  --color-gm-soft: rgba(244, 114, 182, 0.12);
+  --color-gm-soft: rgba(244, 114, 182, 0.1);
 
-  /* Character colors - vivid palette */
-  --color-char-1: #7c6cff;
+  /* Character colors */
+  --color-char-1: #818cf8;
   --color-char-2: #f472b6;
   --color-char-3: #22d3ee;
   --color-char-4: #fb923c;
@@ -46,42 +46,44 @@
 
   /* Border radius */
   --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
   --radius-full: 9999px;
 
-  /* Shadows - with colored glow */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-accent: 0 0 20px rgba(124, 108, 255, 0.15);
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.5);
+  --shadow-accent: 0 0 16px rgba(124, 108, 255, 0.12);
+  --shadow-input: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme='light'] {
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f5f5f7;
-  --color-bg-tertiary: #e8e8ed;
-  --color-bg-elevated: #fafafa;
-  --color-bg-hover: #f0f0f0;
-  --color-bg-active: #e0e0e7;
+  --color-bg-primary: #f8f8fa;
+  --color-bg-secondary: #f0f0f4;
+  --color-bg-tertiary: #e5e5eb;
+  --color-bg-elevated: #fcfcfd;
+  --color-bg-hover: #eaeaef;
+  --color-bg-active: #dedee6;
 
-  --color-text-primary: #1b1b1f;
-  --color-text-secondary: #6b6b82;
-  --color-text-muted: #8e8e93;
+  --color-text-primary: #18181b;
+  --color-text-secondary: #62626e;
+  --color-text-muted: #9494a0;
 
-  --color-border: #d1d1d6;
-  --color-border-subtle: #e5e5ea;
+  --color-border: #d4d4db;
+  --color-border-subtle: #e8e8ed;
 
   --color-success: #16a34a;
   --color-warning: #d97706;
   --color-error: #dc2626;
   --color-info: #3b82f6;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
-  --shadow-accent: 0 0 20px rgba(124, 108, 255, 0.1);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 4px 24px rgba(0, 0, 0, 0.1);
+  --shadow-accent: 0 0 16px rgba(124, 108, 255, 0.08);
+  --shadow-input: 0 1px 6px rgba(0, 0, 0, 0.06);
 }
 
 * {

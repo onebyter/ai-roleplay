@@ -3,7 +3,8 @@ import { useSessionStore } from '@/stores/sessionStore'
 import Input from '@/components/ui/Input'
 import Textarea from '@/components/ui/Textarea'
 import Avatar from '@/components/ui/Avatar'
-import { Globe, Users, Info } from 'lucide-react'
+import Button from '@/components/ui/Button'
+import { Globe, Users, Info, X } from 'lucide-react'
 
 type RightTab = 'world' | 'characters' | 'info'
 
@@ -96,12 +97,23 @@ export default function RightPanel() {
             <h3 className="text-[11px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2.5 px-1">参与角色</h3>
             <div className="space-y-2">
               {currentSession?.characters.map((char) => (
-                <div key={char.id} className="flex items-center gap-2.5 p-2.5 rounded-[var(--radius-lg)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)]">
+                <div key={char.id} className="group flex items-center gap-2.5 p-2.5 rounded-[var(--radius-lg)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)]">
                   <Avatar name={char.name} size="sm" />
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="text-sm font-medium truncate">{char.name}</div>
                     <div className="text-[11px] text-[var(--color-text-muted)] truncate">{char.personality}</div>
                   </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => {
+                      const updated = currentSession.characters.filter(c => c.id !== char.id)
+                      useSessionStore.getState().updateSession({ characters: updated })
+                    }}
+                  >
+                    <X size={13} />
+                  </Button>
                 </div>
               ))}
               {(!currentSession || currentSession.characters.length === 0) && (

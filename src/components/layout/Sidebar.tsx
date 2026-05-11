@@ -81,39 +81,37 @@ export default function Sidebar() {
   }
 
   return (
-    <div className="w-64 flex flex-col bg-[var(--color-bg-secondary)] border-r border-[var(--color-border)]">
+    <div className="w-64 flex flex-col bg-[var(--color-bg-secondary)] border-r border-[var(--color-border-subtle)]">
       {/* Title */}
-      <div className="title-bar-drag h-13 flex items-center px-4 border-b border-[var(--color-border)]">
-        <div className="title-bar-no-drag flex items-center gap-2">
-          <div className="w-7 h-7 rounded-[var(--radius-md)] bg-[var(--color-accent)] flex items-center justify-center shadow-[var(--shadow-accent)]">
+      <div className="title-bar-drag h-13 flex items-center px-5 border-b border-[var(--color-border-subtle)]">
+        <div className="title-bar-no-drag flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-[var(--radius-lg)] bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-char-3)] flex items-center justify-center shadow-[var(--shadow-accent)]">
             <span className="text-white text-xs font-bold">AI</span>
           </div>
-          <span className="text-sm font-bold tracking-tight">RolePlay</span>
+          <span className="text-sm font-semibold tracking-tight">RolePlay</span>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[var(--color-border)] px-1">
+      <div className="flex px-2 pt-2 gap-1">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium transition-colors relative"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-[var(--radius-md)] transition-all duration-150"
             style={{
-              color: activeTab === tab.id ? 'var(--color-accent)' : 'var(--color-text-muted)',
+              backgroundColor: activeTab === tab.id ? 'var(--color-bg-active)' : 'transparent',
+              color: activeTab === tab.id ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
             }}
           >
             {tab.icon}
             {tab.label}
-            {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-2 right-2 h-[2px] bg-[var(--color-accent)] rounded-t-full" />
-            )}
           </button>
         ))}
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-2.5 space-y-1">
+      <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
         {activeTab === 'sessions' && (
           <>
             <div className="flex justify-between items-center mb-2 px-1.5">

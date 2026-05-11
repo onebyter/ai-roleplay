@@ -7,9 +7,16 @@ import RightPanel from './components/layout/RightPanel'
 export default function App() {
   const [rightPanelOpen, setRightPanelOpen] = useState(true)
   const theme = useSettingsStore((s) => s.theme)
+  const setTheme = useSettingsStore((s) => s.setTheme)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme')
+    if (saved === 'light' || saved === 'dark') setTheme(saved)
+  }, [])
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
   }, [theme])
 
   return (
