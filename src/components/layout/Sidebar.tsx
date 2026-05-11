@@ -2,20 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useCharacterStore } from '@/stores/characterStore'
 import { useChatStore } from '@/stores/chatStore'
-import { useSettingsStore } from '@/stores/settingsStore'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Avatar from '@/components/ui/Avatar'
-import ApiConfigPanel from '@/components/settings/ApiConfigPanel'
 import CharacterEditor from '@/components/character/CharacterEditor'
+import SettingsModal from '@/components/settings/SettingsModal'
 import { MessageSquare, Users, Settings, Plus, Trash2 } from 'lucide-react'
 
-type SidebarTab = 'sessions' | 'characters' | 'settings'
+type SidebarTab = 'sessions' | 'characters'
 
 const TABS: { id: SidebarTab; label: string; icon: React.ReactNode }[] = [
   { id: 'sessions', label: '会话', icon: <MessageSquare size={15} /> },
   { id: 'characters', label: '角色', icon: <Users size={15} /> },
-  { id: 'settings', label: '设置', icon: <Settings size={15} /> },
 ]
 
 export default function Sidebar() {
@@ -27,8 +25,8 @@ export default function Sidebar() {
   } = useSessionStore()
   const { characters, addCharacter, removeCharacter, loadCharacters } = useCharacterStore()
   const { setMessages } = useChatStore()
-  const theme = useSettingsStore((s) => s.theme)
   const [editingCharId, setEditingCharId] = useState<string | undefined>(undefined)
+  const [showSettings, setShowSettings] = useState(false)
   const [showNewSession, setShowNewSession] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
 
@@ -220,35 +218,25 @@ export default function Sidebar() {
             )}
           </>
         )}
+      </div>
 
-        {activeTab === 'settings' && (
-          <div className="space-y-3">
-            <div className="p-3 rounded-[var(--radius-lg)] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)]">
-              <div className="text-xs font-medium mb-2">主题</div>
-              <div className="flex gap-1.5">
-                {(['dark', 'light'] as const).map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => useSettingsStore.getState().setTheme(t)}
-                    className="flex-1 px-3 py-1.5 text-xs rounded-[var(--radius-md)] font-medium transition-all duration-150 border"
-                    style={{
-                      backgroundColor: theme === t ? 'var(--color-accent-soft)' : 'var(--color-bg-elevated)',
-                      color: theme === t ? 'var(--color-accent)' : 'var(--color-text-muted)',
-                      borderColor: theme === t ? 'rgba(124,108,255,0.3)' : 'var(--color-border)',
-                    }}
-                  >
-                    {t === 'dark' ? '深色' : '浅色'}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <ApiConfigPanel />
-          </div>
-        )}
+      {/* Bottom settings button */}
+      <div className="border-t border-[var(--color-border-subtle)] p-2">
+        <button
+          onClick={() => setShowSettings(true)}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-[var(--radius-md)] text-sm font-medium transition-all duration-150 hover:bg-[var(--color-bg-hover)]"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
+          <Settings size={15} />
+          设置
+        </button>
       </div>
 
       {editingCharId !== undefined && (
         <CharacterEditor characterId={editingCharId} onClose={() => setEditingCharId(undefined)} />
+      )}
+      {showSettings && (
+        <SettingsModal onClose={() => setShowSettings(false)} />
       )}
     </div>
   )

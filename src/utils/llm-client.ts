@@ -16,6 +16,8 @@ declare global {
       llm: {
         streamChat: (config: any, messages: any[], agentId: string) => Promise<any>
         stopStream: (agentId: string) => Promise<any>
+        fetchModels: (config: any) => Promise<{ success: boolean; models?: string[]; error?: string }>
+        testConnection: (config: any) => Promise<{ success: boolean; error?: string }>
       }
       file: {
         readTxt: (filePath: string) => Promise<any>

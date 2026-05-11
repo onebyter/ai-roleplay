@@ -62,4 +62,39 @@ export function setupLLMIPC() {
     }
     return { success: false, error: 'No active stream found' }
   })
+
+  ipcMain.handle('llm:fetchModels', async (_event, config: any) => {
+    try {
+      const resp = await fetch(`${config.baseURL}/v1/models`, {
+        headers: { Authorization: `Bearer ${config.apiKey}` },
+      })
+      if (!resp.ok) {
+        return { success: false, error: `HTTP ${resp.status}: ${resp.statusText}` }
+      }
+      const data: any = await resp.json()
+      const models = (data.data || []).map((m: any) => m.id).sort()
+      return { success: true, models }
+    } catch (error: any) {
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('llm:testConnection', async (_event, config: any) => {
+    try {
+      const client = new OpenAI({
+        baseURL: config.baseURL,
+        apiKey: config.apiKey,
+        timeout: 10000,
+        maxRetries: 0,
+      })
+      await client.chat.completions.create({
+        model: config.model,
+        messages: [{ role: 'user', content: 'hi' }],
+        max_tokens: 5,
+      })
+      return { success: true }
+    } catch (error: any) {
+      return { success: false, error: error.message }
+    }
+  })
 }

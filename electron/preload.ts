@@ -16,6 +16,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     streamChat: (config: any, messages: any[], agentId: string) =>
       ipcRenderer.invoke('llm:streamChat', config, messages, agentId),
     stopStream: (agentId: string) => ipcRenderer.invoke('llm:stopStream', agentId),
+    fetchModels: (config: any) => ipcRenderer.invoke('llm:fetchModels', config),
+    testConnection: (config: any) => ipcRenderer.invoke('llm:testConnection', config),
   },
 
   // File operations
