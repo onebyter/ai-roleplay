@@ -28,7 +28,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} onClick={onClose}>
       <div
-        className="w-[760px] h-[520px] flex rounded-[var(--radius-xl)] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-[var(--shadow-lg)] overflow-hidden"
+        className="w-[820px] h-[520px] flex rounded-[var(--radius-xl)] bg-[var(--color-bg-secondary)] border border-[var(--color-border)] shadow-[var(--shadow-lg)] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Left nav */}
