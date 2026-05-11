@@ -114,7 +114,7 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
         }
 
         if (fullContent) {
-          useChatStore.getState().finishStreaming(char.id, fullContent)
+          useChatStore.getState().finishStreaming(char.id, fullContent, char.name)
         } else {
           useChatStore.getState().setStreaming(false)
           addMessage({
@@ -216,7 +216,7 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
               id: 'streaming',
               sessionId: '',
               characterId: generatingAgentId || '',
-              characterName: characters.find(c => c.id === generatingAgentId)?.name || 'AI',
+              characterName: currentSession?.characters.find(c => c.id === generatingAgentId)?.name || characters.find(c => c.id === generatingAgentId)?.name || 'AI',
               content: streamingContent,
               timestamp: Date.now(),
               type: 'dialogue',

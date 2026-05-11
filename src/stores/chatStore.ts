@@ -13,7 +13,7 @@ interface ChatState {
   updateMessage: (id: string, updates: Partial<Message>) => void
   appendToStreaming: (content: string) => void
   setStreaming: (isGenerating: boolean, agentId?: string) => void
-  finishStreaming: (agentId: string, finalContent: string) => void
+  finishStreaming: (agentId: string, finalContent: string, characterName?: string) => void
   clearMessages: () => void
   setMessages: (messages: Message[]) => void
 }
@@ -53,14 +53,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
       streamingContent: isGenerating ? '' : get().streamingContent,
     }),
 
-  finishStreaming: (agentId, finalContent) => {
+  finishStreaming: (agentId, finalContent, characterName) => {
     const state = get()
     // Add the final message
     const newMsg: Message = {
       id: uuidv4(),
       sessionId: '',
       characterId: agentId,
-      characterName: '',
+      characterName: characterName || '',
       content: finalContent,
       timestamp: Date.now(),
       type: 'dialogue',
