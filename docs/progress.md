@@ -74,6 +74,8 @@ src/utils/llm-client.ts
 - [X] `docs/test-cases.xlsx` — 结构化测试用例管理（v0.1.0 28 条 + v0.1.1 12 条），汇总 Sheet 自动统计
 - [X] `docs/testing.md` — 精简为测试流程说明 + 模板
 - [X] `docs/requirements.md` — 修正过时色值和技术栈描述
+- [X] 修复 T-008-3：切换会话时无操作也更新 updatedAt
+- [X] 修复会话列表时间显示"非法时间"（SQL snake_case → camelCase 别名）
 
 **构建状态**: 编译通过，5/5 测试通过
 
