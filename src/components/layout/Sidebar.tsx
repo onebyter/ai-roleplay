@@ -7,6 +7,7 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Avatar from '@/components/ui/Avatar'
 import ApiConfigPanel from '@/components/settings/ApiConfigPanel'
+import CharacterEditor from '@/components/character/CharacterEditor'
 import { MessageSquare, Users, Settings, Plus, Trash2 } from 'lucide-react'
 
 type SidebarTab = 'sessions' | 'characters' | 'settings'
@@ -27,6 +28,7 @@ export default function Sidebar() {
   const { characters, addCharacter, removeCharacter, loadCharacters } = useCharacterStore()
   const { setMessages } = useChatStore()
   const theme = useSettingsStore((s) => s.theme)
+  const [editingCharId, setEditingCharId] = useState<string | undefined>(undefined)
   const [showNewSession, setShowNewSession] = useState(false)
   const [newSessionName, setNewSessionName] = useState('')
 
@@ -184,18 +186,33 @@ export default function Sidebar() {
             {characters.map((char) => (
               <div
                 key={char.id}
-                className="group flex items-center justify-between p-2.5 rounded-[var(--radius-lg)] transition-all duration-150 hover:bg-[var(--color-bg-hover)]"
+                className="group flex items-center justify-between p-2.5 rounded-[var(--radius-lg)] transition-all duration-150 hover:bg-[var(--color-bg-hover)] cursor-pointer"
+                onClick={() => setEditingCharId(char.id)}
               >
-                <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <Avatar name={char.name} size="sm" />
                   <span className="text-sm truncate">{char.name}</span>
                 </div>
-                <button
-                  onClick={() => removeCharacter(char.id)}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1.5 rounded-[var(--radius-sm)] hover:bg-[rgba(248,113,113,0.12)]"
-                >
-                  <Trash2 size={13} className="text-[var(--color-error)]" />
-                </button>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {currentSession && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        const updated = [...currentSession.characters.filter(c => c.id !== char.id), char]
+                        useSessionStore.getState().updateSession({ characters: updated })
+                      }}
+                      className="px-2 py-0.5 text-[10px] rounded-[var(--radius-full)] bg-[var(--color-accent-soft)] text-[var(--color-accent)] font-medium"
+                    >
+                      加入会话
+                    </button>
+                  )}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); removeCharacter(char.id) }}
+                    className="p-1.5 rounded-[var(--radius-sm)] hover:bg-[rgba(248,113,113,0.12)]"
+                  >
+                    <Trash2 size={13} className="text-[var(--color-error)]" />
+                  </button>
+                </div>
               </div>
             ))}
             {characters.length === 0 && (
@@ -231,6 +248,10 @@ export default function Sidebar() {
           </div>
         )}
       </div>
+
+      {editingCharId !== undefined && (
+        <CharacterEditor characterId={editingCharId} onClose={() => setEditingCharId(undefined)} />
+      )}
     </div>
   )
 }
