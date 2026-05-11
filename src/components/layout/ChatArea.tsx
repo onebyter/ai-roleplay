@@ -231,7 +231,7 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
       {/* Input */}
       <MessageInput
         onSend={handleSendMessage}
-        characters={characters}
+        characters={currentSession?.characters || []}
         selectedSpeakerId={selectedSpeakerId}
         onSelectSpeaker={setSelectedSpeakerId}
         isGM={currentSession?.userRole === 'gm'}
