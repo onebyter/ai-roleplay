@@ -117,6 +117,11 @@ export function buildMessagesForAgent(
   }))
 }
 
+type StreamEvent =
+  | { type: 'chunk'; data: string }
+  | { type: 'end' }
+  | { type: 'error'; error: string }
+
 export async function* streamChat(
   config: APIConfig,
   systemPrompt: string,
@@ -128,68 +133,46 @@ export async function* streamChat(
     ...messages,
   ]
 
-  // Start streaming via IPC
-  window.electronAPI.llm.streamChat(
-    {
-      baseURL: config.baseURL,
-      apiKey: config.apiKey,
-      model: config.models[0],
-    },
-    llmMessages,
-    agentId
-  )
+  let resolve: ((value: StreamEvent) => void) | null = null
+  const buffer: StreamEvent[] = []
 
-  // Yield chunks as they come in
-  let resolve: ((value: string | null) => void) | null = null
-  let buffer: string[] = []
-  let done = false
+  const emit = (event: StreamEvent) => {
+    if (resolve) { resolve(event); resolve = null }
+    else { buffer.push(event) }
+  }
 
   const unsubChunk = window.electronAPI.onStreamChunk((data) => {
-    if (data.agentId === agentId) {
-      if (resolve) {
-        resolve(data.chunk)
-        resolve = null
-      } else {
-        buffer.push(data.chunk)
-      }
-    }
+    if (data.agentId === agentId) emit({ type: 'chunk', data: data.chunk })
   })
 
   const unsubEnd = window.electronAPI.onStreamEnd((data) => {
-    if (data.agentId === agentId) {
-      done = true
-      if (resolve) {
-        resolve(null)
-        resolve = null
-      }
-    }
+    if (data.agentId === agentId) emit({ type: 'end' })
   })
 
   const unsubError = window.electronAPI.onStreamError((data) => {
-    if (data.agentId === agentId) {
-      done = true
-      if (resolve) {
-        resolve(null)
-        resolve = null
-      }
-    }
+    if (data.agentId === agentId) emit({ type: 'error', error: data.error })
+  })
+
+  // 先注册事件监听，再启动流
+  window.electronAPI.llm.streamChat(
+    { baseURL: config.baseURL, apiKey: config.apiKey, model: config.models[0] },
+    llmMessages,
+    agentId
+  ).catch((err: Error) => {
+    console.error('[streamChat] IPC error:', err)
+    emit({ type: 'error', error: err.message || String(err) })
   })
 
   try {
-    while (!done) {
-      if (buffer.length > 0) {
-        yield buffer.shift()!
-      } else {
-        const chunk = await new Promise<string | null>((r) => {
-          resolve = r
-        })
-        if (chunk === null) break
-        yield chunk
-      }
+    while (true) {
+      const event = buffer.length > 0 ? buffer.shift()! : await new Promise<StreamEvent>((r) => { resolve = r })
+      if (event.type === 'end') break
+      if (event.type === 'error') throw new Error(event.error)
+      if (event.type === 'chunk') yield event.data
     }
-    // Flush remaining buffer
     while (buffer.length > 0) {
-      yield buffer.shift()!
+      const e = buffer.shift()!
+      if (e.type === 'chunk') yield e.data
     }
   } finally {
     unsubChunk()

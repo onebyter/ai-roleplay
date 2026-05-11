@@ -5,6 +5,8 @@ const activeStreams = new Map<string, AbortController>()
 
 export function setupLLMIPC() {
   ipcMain.handle('llm:streamChat', async (_event, config: any, messages: any[], agentId: string) => {
+    console.log('[LLM] streamChat called:', { baseURL: config.baseURL, model: config.model, msgs: messages.length, agentId })
+
     const client = new OpenAI({
       baseURL: config.baseURL,
       apiKey: config.apiKey,
@@ -14,6 +16,7 @@ export function setupLLMIPC() {
     activeStreams.set(agentId, controller)
 
     try {
+      console.log('[LLM] creating stream...')
       const stream = await client.chat.completions.create(
         {
           model: config.model,

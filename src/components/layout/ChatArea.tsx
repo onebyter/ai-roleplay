@@ -76,7 +76,27 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
         ? char.agentConfig.provider
         : selectedConfigId
       const apiConfig = apiConfigs.find(c => c.id === providerId)
-      if (!apiConfig || !apiConfig.apiKey) continue
+      console.log('[ChatArea] checking char:', char.name, 'providerId:', providerId, 'found:', !!apiConfig, 'hasKey:', !!apiConfig?.apiKey)
+      if (!apiConfig || !apiConfig.apiKey) {
+        if (!apiConfig) {
+          addMessage({
+            sessionId: currentSession.id,
+            characterId: 'system',
+            characterName: '系统',
+            content: `无法找到 ${char.name} 的 API 配置 (${providerId})，请在设置中添加对应的 API 配置。`,
+            type: 'system',
+          })
+        } else if (!apiConfig.apiKey) {
+          addMessage({
+            sessionId: currentSession.id,
+            characterId: 'system',
+            characterName: '系统',
+            content: `${char.name} 的 API 配置 (${apiConfig.name}) 缺少 API Key，请在设置中填写。`,
+            type: 'system',
+          })
+        }
+        continue
+      }
 
       const model = char.agentConfig?.model || apiConfig.models[0]
       const chatConfig = { ...apiConfig, models: [model] }
@@ -93,9 +113,27 @@ export default function ChatArea({ onToggleRightPanel, rightPanelOpen }: ChatAre
           useChatStore.getState().appendToStreaming(chunk)
         }
 
-        useChatStore.getState().finishStreaming(char.id, fullContent)
-      } catch {
+        if (fullContent) {
+          useChatStore.getState().finishStreaming(char.id, fullContent)
+        } else {
+          useChatStore.getState().setStreaming(false)
+          addMessage({
+            sessionId: currentSession.id,
+            characterId: 'system',
+            characterName: '系统',
+            content: `${char.name} 没有回复，请检查 API 配置和网络连接。`,
+            type: 'system',
+          })
+        }
+      } catch (err: any) {
         useChatStore.getState().setStreaming(false)
+        addMessage({
+          sessionId: currentSession.id,
+          characterId: 'system',
+          characterName: '系统',
+          content: `AI 回复失败: ${err.message || '未知错误'}。请检查 API Key 和 Base URL 是否正确。`,
+          type: 'system',
+        })
       }
     }
   }
