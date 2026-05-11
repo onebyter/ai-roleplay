@@ -55,6 +55,7 @@ describe('buildMessagesForAgent', () => {
     }]
     const result = buildMessagesForAgent(msgs)
     expect(result[0].role).toBe('user')
+    expect(result[0].content).toBe('hello')
   })
 
   it('其他角色消息映射为 assistant role', () => {
@@ -65,5 +66,6 @@ describe('buildMessagesForAgent', () => {
     }]
     const result = buildMessagesForAgent(msgs)
     expect(result[0].role).toBe('assistant')
+    expect(result[0].content).toBe('hi')
   })
 })

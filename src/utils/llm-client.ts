@@ -123,7 +123,7 @@ export function buildMessagesForAgent(
 ): ChatMessage[] {
   return history.slice(-maxMessages).map((msg) => ({
     role: msg.characterId === 'user' ? 'user' as const : 'assistant' as const,
-    content: `[${msg.characterName}]: ${msg.content}`,
+    content: msg.content,
   }))
 }
 
