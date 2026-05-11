@@ -73,8 +73,31 @@ export default function CharacterEditor({ characterId, onClose }: CharacterEdito
         </div>
 
         <div>
-          <label className="text-[11px] text-[var(--color-text-muted)] mb-1 block">标签（逗号分隔）</label>
-          <Input placeholder="如：奇幻, 冒险, 骑士" value={form.tags?.join(', ') || ''} onChange={(e) => updateField('tags', e.target.value.split(',').map((t: string) => t.trim()).filter(Boolean))} />
+          <label className="text-[11px] text-[var(--color-text-muted)] mb-1 block">标签</label>
+          <div className="flex flex-wrap gap-1 mb-1.5">
+            {(form.tags || []).map((tag) => (
+              <span key={tag} className="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-[var(--radius-full)] bg-[var(--color-bg-elevated)] border border-[var(--color-border)]">
+                {tag}
+                <button
+                  onClick={() => updateField('tags', (form.tags || []).filter((t: string) => t !== tag))}
+                  className="hover:text-[var(--color-error)] transition-colors"
+                >×</button>
+              </span>
+            ))}
+          </div>
+          <Input
+            placeholder="输入标签后按 Enter 添加"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                const val = (e.target as HTMLInputElement).value.trim()
+                if (val && !(form.tags || []).includes(val)) {
+                  updateField('tags', [...(form.tags || []), val]);
+                  (e.target as HTMLInputElement).value = ''
+                }
+              }
+            }}
+          />
         </div>
 
         <div className="grid grid-cols-3 gap-3">

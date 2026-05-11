@@ -12,14 +12,11 @@ const CHAR_COLORS = [
   'var(--color-char-4)', 'var(--color-char-5)', 'var(--color-char-6)',
   'var(--color-char-7)', 'var(--color-char-8)',
 ]
-const CHARACTER_COLOR_MAP: Record<string, string> = {}
 
 function getCharacterColor(id: string): string {
-  if (!CHARACTER_COLOR_MAP[id]) {
-    const index = Object.keys(CHARACTER_COLOR_MAP).length % CHAR_COLORS.length
-    CHARACTER_COLOR_MAP[id] = CHAR_COLORS[index]
-  }
-  return CHARACTER_COLOR_MAP[id]
+  let hash = 0
+  for (let i = 0; i < id.length; i++) hash = ((hash << 5) - hash + id.charCodeAt(i)) | 0
+  return CHAR_COLORS[Math.abs(hash) % CHAR_COLORS.length]
 }
 
 export default function MessageBubble({ message }: MessageBubbleProps) {
@@ -69,7 +66,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         <div
           className="px-4 py-3 text-sm leading-relaxed markdown-body"
           style={{
-            backgroundColor: isUser ? 'var(--color-accent)' : 'var(--color-bg-elevated)',
+            backgroundColor: isUser ? 'var(--color-accent-hover)' : 'var(--color-bg-elevated)',
             color: isUser ? '#fff' : 'var(--color-text-primary)',
             borderRadius: isUser
               ? 'var(--radius-lg) var(--radius-lg) 4px var(--radius-lg)'

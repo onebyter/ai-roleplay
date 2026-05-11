@@ -72,7 +72,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
               {NAV_ITEMS.find((n) => n.id === activeNav)?.label}
             </span>
           </div>
-          <div className="flex-1 overflow-y-auto p-5">
+          <div className={`flex-1 overflow-hidden ${activeNav !== 'api' ? 'overflow-y-auto p-5' : ''}`}>
             {activeNav === 'appearance' && (
               <section>
                 <h3 className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-3">主题模式</h3>

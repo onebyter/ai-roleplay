@@ -108,7 +108,7 @@ export default function ApiConfigPanel() {
   const isEditing = editingId !== null
 
   return (
-    <div className="flex gap-0 h-full -m-5">
+    <div className="flex gap-0 h-full">
       {/* Left: config list */}
       <div className="w-48 shrink-0 border-r border-[var(--color-border-subtle)] p-3 space-y-1 overflow-y-auto">
         <Button size="sm" className="w-full mb-2" onClick={startAdd}>
