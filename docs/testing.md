@@ -17,7 +17,7 @@ npm run test:watch    # 监听模式，文件变更自动重跑
 npm run test:coverage # 覆盖率报告
 ```
 
-测试文件：`src/**/*.test.{ts,tsx}`。编写规范遵循 `test-driven-development` skill。
+测试文件：`src/**/*.test.{ts,tsx}`。编写规范遵循 `test-driven-development` skill（对应开发管线 Phase 2：先写失败测试 → 最小实现 → 重构）。
 
 ### 手动测试
 
@@ -27,15 +27,15 @@ npm run test:coverage # 覆盖率报告
 - 状态（待测试/通过/失败/跳过，下拉选择）
 - "汇总" Sheet 自动统计各版本通过率
 
-## 测试流程
+## 测试流程（映射到开发管线）
 
-1. 功能开发前：在 `test-cases.xlsx` 对应版本 Sheet 中添加用例
-2. 功能开发中：运行 `npm run test:watch`，先写测试再写实现
-3. 功能完成后：
-   - `npm test` 确认单元测试全部通过
-   - `npm run dev` 启动应用，按 xlsx 用例逐项手动验证
-   - 用例状态填为"通过"或"失败"
-4. 回归测试：修复 bug 后，在对应版本 Sheet 末尾追加回归验证行
+| 管线阶段 | 测试动作 |
+|----------|----------|
+| Phase 1 设计 | 在 `test-cases.xlsx` 对应版本 Sheet 中添加手动用例 |
+| Phase 2 实现 | `npm run test:watch`，先写测试再写实现（TDD） |
+| Phase 3 质检 | `npm test` 全绿 + `npm run typecheck` 零错误 + `npm run build` 成功 |
+| Phase 3 手动 | `npm run dev` 启动应用，按 xlsx 用例逐项手动验证，填状态 |
+| 例外-调试 | 修复 bug 后在对应版本 Sheet 末尾追加回归验证行 |
 
 ## 测试报告模板
 

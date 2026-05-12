@@ -14,6 +14,8 @@ export default function ApiConfigPanel() {
   const [fetchingModels, setFetchingModels] = useState(false)
   const [testingConn, setTestingConn] = useState<string | null>(null)
   const [statusMsg, setStatusMsg] = useState('')
+  const [statusType, setStatusType] = useState<'success' | 'error' | ''>('')
+  const showStatus = (msg: string, type: 'success' | 'error') => { setStatusMsg(msg); setStatusType(type) }
   const selectedConfig = apiConfigs.find(c => c.id === selectedConfigId)
 
   const startAdd = () => {

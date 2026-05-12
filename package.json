@@ -1,6 +1,6 @@
 {
   "name": "ai-roleplay",
-  "version": "1.0.0",
+  "version": "0.2.1",
   "description": "Multi-Agent Role-Playing Desktop Application",
   "main": "dist/electron/main.js",
   "scripts": {
@@ -11,7 +11,8 @@
     "start": "electron .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "ai",
@@ -45,6 +46,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.6",
     "concurrently": "^9.2.1",
     "electron-forge": "^5.2.4",
     "jsdom": "^29.1.1",

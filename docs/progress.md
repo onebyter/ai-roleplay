@@ -1,5 +1,7 @@
 # AI RolePlay - 开发进度文档
 
+> 所有版本开发遵循 `CLAUDE.md` 中的六阶段管线（Phase 0-5），skill 调用自动记录到 `.claude/skill-usage.log`。
+
 ## 版本记录
 
 ### v0.1.0 - 基础架构 (2026-05-10)
@@ -175,7 +177,6 @@ src/utils/llm-client.ts
   - [ ] 消息 Markdown 渲染样式美化
   - [ ] 图标统一替换为 Lucide Icons
   - [ ] 滚动条自定义样式
-  - [ ] 亮色主题（可选）
 
 ---
 

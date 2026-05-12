@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Skill: ${CLAUDE_TOOL_NAME} | Args: ${CLAUDE_TOOL_INPUT}\" >> \"${CLAUDE_PROJECT_DIR}/.claude/skill-usage.log\""
+          }
+        ]
+      }
+    ]
+  }
+}

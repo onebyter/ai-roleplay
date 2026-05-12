@@ -93,6 +93,79 @@ npm run test:watch    # 监听模式
 - **sessionStore 变更即持久化** — `updateSession()` 自动调 `saveSession()` 写 SQLite。
 - **数据库 camelCase 别名** — `listSessions` SQL 中 `created_at as createdAt, updated_at as updatedAt`，否则前端拿到 snake_case 字段导致日期显示异常。
 
+## 开发 Skill 使用规范
+
+所有 skill 调用自动记录到 `.claude/skill-usage.log`。开发遵循以下四阶段管线，skill 按阶段严格触发。
+
+### 管线总览
+
+```
+Phase 0: 立项    → brainstorming
+Phase 1: 设计    → ui-ux-pro-max（UX 结构）→ frontend-design（视觉）/ writing-plans（计划）
+Phase 2: 实现    → test-driven-development
+Phase 3: 质检    → verification-before-completion → security-review（涉敏时）→ simplify
+Phase 4: 审查    → requesting-code-review → receiving-code-review（有反馈时）
+Phase 5: 收尾    → finishing-a-development-branch
+
+例外（随时触发）: systematic-debugging
+```
+
+### Phase 0 — 立项
+
+| Skill | 触发条件 | 说明 |
+|-------|----------|------|
+| `brainstorming` | 收到任何新功能/组件/创意需求后，**写代码前** | 探索用户意图、需求边界、设计方案取舍。确认后再进入 Phase 1 |
+
+### Phase 1 — 设计
+
+| Skill | 触发条件 | 说明 |
+|-------|----------|------|
+| `ui-ux-pro-max` | 任务涉及 UI 组件、交互流程、页面布局时，brainstorming 之后 | UX 架构、可访问性、交互模式、设计系统化。先定结构再定视觉 |
+| `frontend-design` | UI 任务在 ux-pro-max 明确结构后 | 生成有辨识度的生产级视觉设计，配色/排版/动效方向。产出物作为实现参考 |
+| `writing-plans` | 任务包含 3+ 步骤或跨文件变更时，设计明确后 | 产出 step-by-step 实施计划，含文件清单、依赖关系、验证步骤。1-2 步的简单任务可跳过 |
+
+**选择规则**：
+- 纯逻辑任务（IPC、store、工具函数）：只用 `writing-plans`
+- UI 任务（组件、页面、样式、交互）：`ui-ux-pro-max`（UX 结构）→ `frontend-design`（视觉方向）→ `writing-plans`（实施计划）
+- 小型 UI 调整（单组件微调）：可跳过 `writing-plans`，但必须走 `ui-ux-pro-max` + `frontend-design`
+
+### Phase 2 — 实现
+
+| Skill | 触发条件 | 说明 |
+|-------|----------|------|
+| `test-driven-development` | 编写任何实现代码前，Plan 完成后 | 先写失败测试 → 最小实现 → 重构。不跳过此环节 |
+
+**测试边界**：自动化测试（vitest）覆盖 store 逻辑、工具函数、IPC 处理；手动测试覆盖 UI 交互、视觉验证（用例管理在 `docs/test-cases.xlsx`）。详见 `docs/testing.md` 的管线映射表。
+
+### Phase 3 — 质检
+
+| Skill | 触发条件 | 顺序 |
+|-------|----------|------|
+| `verification-before-completion` | 声称"完成了"之前 | 1 |
+| `security-review` | 修改了 Electron IPC、文件 I/O、API Key 存取、数据序列化时 | 2 |
+| `simplify` | verification 通过后，commit 前 | 3 |
+
+**verification 检查清单**：`npm test` 全绿 + `npm run typecheck` 零错误 + `npm run build` 成功 + 手动测试用例通过。
+
+### Phase 4 — 审查
+
+| Skill | 触发条件 | 说明 |
+|-------|----------|------|
+| `requesting-code-review` | 质检全部通过后，merge/PR 前 | 生成 review 用的代码变更摘要 |
+| `receiving-code-review` | 收到审查反馈后，**实施前** | 先验证反馈的合理性再改，不盲从 |
+
+### Phase 5 — 收尾
+
+| Skill | 触发条件 | 说明 |
+|-------|----------|------|
+| `finishing-a-development-branch` | 审查通过，准备合并 | 结构化的合并/PR/清理决策，不遗留临时文件 |
+
+### 例外流程 — 调试
+
+| Skill | 触发条件 | 说明 |
+|-------|----------|------|
+| `systematic-debugging` | 遇到任何 bug、测试失败、异常行为 | **必须先诊断再修**，禁止拍脑袋修。发现问题 → 复现 → 定位根因 → 修 → 回归测试 |
+
 ## 文档索引
 
 | 文档 | 用途 |
@@ -103,4 +176,5 @@ npm run test:watch    # 监听模式
 | `docs/progress.md` | 版本开发进度 |
 | `docs/testing.md` | 测试流程 |
 | `docs/test-cases.xlsx` | 手动测试用例（v0.1.0 ~ v0.2.1） |
+| `docs/superpowers/plans/_template.md` | 新计划模板（按 Phase 0-5 结构） |
 | `docs/superpowers/plans/archive/` | 已完成实施计划 |

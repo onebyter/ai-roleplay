@@ -1,5 +1,7 @@
 # AI RolePlay - 需求文档
 
+> **管线定位**：本文档是 Phase 0 `brainstorming` 的**需求基线**。每个功能需求（F-xxx）的实现走完整六阶段管线：brainstorming（立项）→ frontend-design / writing-plans（设计）→ test-driven-development（实现）→ verification / security-review / simplify（质检）→ code review（审查）→ branch finish（收尾）。
+
 ## 1. 项目概述
 
 开发一款支持多智能体角色扮演的桌面软件。界面风格参考 Cherry Studio（群聊方式），每个角色由独立 AI 智能体控制，世界背景和运行逻辑由单独智能体接管。
