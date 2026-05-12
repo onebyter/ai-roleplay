@@ -2,7 +2,7 @@
 
 > **创建时间**: YYYY-MM-DD
 > **对应管线**: Phase 0 → Phase 5（详见 `CLAUDE.md` 开发 Skill 使用规范）
-> **关联 Skill**: brainstorming / ui-ux-pro-max / frontend-design / writing-plans / test-driven-development / verification-before-completion / security-review / simplify / requesting-code-review / finishing-a-development-branch
+> **关联 Skill**: brainstorming / node vision.js / ui-ux-pro-max / frontend-design / writing-plans / test-driven-development / verification-before-completion / security-review / simplify / requesting-code-review / finishing-a-development-branch
 
 ---
 
@@ -31,19 +31,25 @@
 
 ## Phase 1 — 设计
 
-### 1.1 UX 结构（ui-ux-pro-max 产物）
+### 1.1 视觉参考分析（node vision.js 产物）
+
+> **有截图/参考图/竞品截图时填写**。无参考可跳过。
+
+<!-- vision.js 对截图的文字分析：风格、色彩、布局、细节描述 -->
+
+### 1.2 UX 结构（ui-ux-pro-max 产物）
 
 > **仅 UI 任务填写**。纯逻辑任务（IPC、store、工具函数）跳过本节。
 
 <!-- 交互流程、信息架构、可访问性、组件层级关系 -->
 
-### 1.2 视觉方向（frontend-design 产物）
+### 1.3 视觉方向（frontend-design 产物）
 
 > **仅 UI 任务填写**。纯逻辑任务（IPC、store、工具函数）跳过本节。
 
 <!-- 设计方向、关键交互、视觉参考。产出物作为 Phase 2 实现的视觉标准 -->
 
-### 1.3 实施计划（writing-plans 产物）
+### 1.4 实施计划（writing-plans 产物）
 
 > 3+ 步骤或跨文件变更时必填。1-2 步简单任务可简化为 checklist。
 
@@ -102,6 +108,7 @@ Task 4: [名称] (独立，可与 1 并行)
 - [ ] `npm test` — 全部通过（通过数 / 总数）
 - [ ] `npm run build` — 成功
 - [ ] 手动测试 — `docs/test-cases.xlsx` 对应版本 Sheet 全部通过
+- [ ] `node vision.js` 对比验证 — UI 变更后截图与设计规格/参考图对比（仅 UI 任务）
 - [ ] `security-review` — 涉敏变更时触发（IPC / 文件 I/O / API Key / 序列化）
 - [ ] `simplify` — 检查重复代码、死代码、可读性
 

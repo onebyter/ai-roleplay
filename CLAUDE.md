@@ -84,6 +84,36 @@ npm run test:watch    # 监听模式
 
 `buildCharacterPrompt()` 组装：角色名称 → 描述 → 性格 → 说话风格 → 世界设定 → 系统提示词（"核心指令（最高优先级）"）→ 示例对话 → 通用规则。`buildMessagesForAgent()` 将历史消息截取最近 20 条，`characterId === 'user'` → `role: 'user'`，其余 → `role: 'assistant'`。
 
+## 图片识别（视觉能力）
+
+当前底层模型不具备原生识图能力。遇到图片时**不要用 Read 工具**，改用 vision.js：
+
+```
+node vision.js "<图片路径>" "<分析提示词>"
+```
+
+支持本地路径和网络 URL（`--url` 参数）。配置：`VISION_API_KEY` + `VISION_MODEL` 环境变量（默认走魔搭社区 Qwen3-VL）。
+
+### 开发场景提示词（管线内使用）
+
+**场景 A — UI 设计分析**（Phase 1，用户提供参考图/竞品截图/当前界面）：
+
+```
+请从 UI/UX 开发角度详细分析这张截图：1) 布局结构（网格/弹性布局、间距体系）；2) 色彩方案（主色/辅色/背景色，如有 hex 值请提取）；3) 字体排印（字号层级、字重、行高）；4) 组件清单（按钮/输入框/卡片/导航栏等，描述各自的样式）；5) 交互模式（hover/点击/过渡效果）；6) 阴影和圆角系统；7) 可用于 Tailwind CSS 实现的技术细节。最后给出 3-5 条可改进的建议。
+```
+
+**场景 B — UI 质量对比**（Phase 3，对比实现截图与设计规格/参考图）：
+
+```
+请对比分析这张截图：1) 与 design-spec.md 中定义的设计令牌是否一致（色板、圆角、阴影、字体）；2) 组件规格是否匹配（按钮高度、输入框样式、间距）；3) 是否有视觉缺陷（对齐问题、颜色偏差、层级混乱）；4) 列出 3-5 条需修复的问题，按严重程度排序。
+```
+
+**场景 C — 通用识图**（非开发场景）：
+
+```
+请详细描述这张图片的内容。
+```
+
 ## 关键约束
 
 - **不依赖原生模块** — sql.js 替代 better-sqlite3。新依赖不能需要 node-gyp。
@@ -101,9 +131,9 @@ npm run test:watch    # 监听模式
 
 ```
 Phase 0: 立项    → brainstorming
-Phase 1: 设计    → ui-ux-pro-max（UX 结构）→ frontend-design（视觉）/ writing-plans（计划）
+Phase 1: 设计    → vision 截图分析（参考/现状）→ ui-ux-pro-max（UX 结构）→ frontend-design（视觉）/ writing-plans（计划）
 Phase 2: 实现    → test-driven-development
-Phase 3: 质检    → verification-before-completion → security-review（涉敏时）→ simplify
+Phase 3: 质检    → verification-before-completion（含 vision 对比验证）→ security-review（涉敏）→ simplify
 Phase 4: 审查    → requesting-code-review → receiving-code-review（有反馈时）
 Phase 5: 收尾    → finishing-a-development-branch
 
@@ -120,13 +150,14 @@ Phase 5: 收尾    → finishing-a-development-branch
 
 | Skill | 触发条件 | 说明 |
 |-------|----------|------|
-| `ui-ux-pro-max` | 任务涉及 UI 组件、交互流程、页面布局时，brainstorming 之后 | UX 架构、可访问性、交互模式、设计系统化。先定结构再定视觉 |
+| `node vision.js` | 用户提供截图/参考图，或要求分析当前 UI、学习其他应用界面、对比改进时 | 调用魔搭 Qwen3-VL 分析图片，产出文字描述。用于设计参考、现状诊断、竞品分析 |
+| `ui-ux-pro-max` | 任务涉及 UI 组件、交互流程、页面布局时，视觉分析之后 | UX 架构、可访问性、交互模式、设计系统化。先定结构再定视觉 |
 | `frontend-design` | UI 任务在 ux-pro-max 明确结构后 | 生成有辨识度的生产级视觉设计，配色/排版/动效方向。产出物作为实现参考 |
 | `writing-plans` | 任务包含 3+ 步骤或跨文件变更时，设计明确后 | 产出 step-by-step 实施计划，含文件清单、依赖关系、验证步骤。1-2 步的简单任务可跳过 |
 
 **选择规则**：
 - 纯逻辑任务（IPC、store、工具函数）：只用 `writing-plans`
-- UI 任务（组件、页面、样式、交互）：`ui-ux-pro-max`（UX 结构）→ `frontend-design`（视觉方向）→ `writing-plans`（实施计划）
+- UI 任务（组件、页面、样式、交互）：`node vision.js`（有截图/参考时）→ `ui-ux-pro-max`（UX 结构）→ `frontend-design`（视觉方向）→ `writing-plans`（实施计划）
 - 小型 UI 调整（单组件微调）：可跳过 `writing-plans`，但必须走 `ui-ux-pro-max` + `frontend-design`
 
 ### Phase 2 — 实现
@@ -142,8 +173,9 @@ Phase 5: 收尾    → finishing-a-development-branch
 | Skill | 触发条件 | 顺序 |
 |-------|----------|------|
 | `verification-before-completion` | 声称"完成了"之前 | 1 |
-| `security-review` | 修改了 Electron IPC、文件 I/O、API Key 存取、数据序列化时 | 2 |
-| `simplify` | verification 通过后，commit 前 | 3 |
+| `node vision.js` | UI 变更后，对比截图与 `docs/design-spec.md` 或参考图，验证视觉还原 | 2 |
+| `security-review` | 修改了 Electron IPC、文件 I/O、API Key 存取、数据序列化时 | 3 |
+| `simplify` | verification 通过后，commit 前 | 4 |
 
 **verification 检查清单**：`npm test` 全绿 + `npm run typecheck` 零错误 + `npm run build` 成功 + 手动测试用例通过。
 
