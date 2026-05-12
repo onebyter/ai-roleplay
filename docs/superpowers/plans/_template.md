@@ -2,7 +2,7 @@
 
 > **创建时间**: YYYY-MM-DD
 > **对应管线**: Phase 0 → Phase 5（详见 `CLAUDE.md` 开发 Skill 使用规范）
-> **关联 Skill**: brainstorming / node vision.js / ui-ux-pro-max / frontend-design / writing-plans / test-driven-development / verification-before-completion / security-review / simplify / requesting-code-review / finishing-a-development-branch
+> **关联 Skill**: brainstorming / node vision.js / ui-ux-pro-max / frontend-design / writing-plans / test-driven-development / verification-before-completion / security-review / /simplify / requesting-code-review / finishing-a-development-branch
 
 ---
 
@@ -110,7 +110,7 @@ Task 4: [名称] (独立，可与 1 并行)
 - [ ] 手动测试 — `docs/test-cases.xlsx` 对应版本 Sheet 全部通过
 - [ ] `node vision.js` 对比验证 — UI 变更后截图与设计规格/参考图对比（仅 UI 任务）
 - [ ] `security-review` — 涉敏变更时触发（IPC / 文件 I/O / API Key / 序列化）
-- [ ] `simplify` — 检查重复代码、死代码、可读性
+- [ ] `/simplify` — 启动 code-simplifier 独立 agent（opus）审查变更代码，根据反馈修改
 
 ---
 

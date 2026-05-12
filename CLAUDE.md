@@ -96,19 +96,25 @@ node vision.js "<图片路径>" "<分析提示词>"
 
 ### 开发场景提示词（管线内使用）
 
-**场景 A — UI 设计分析**（Phase 1，用户提供参考图/竞品截图/当前界面）：
+**场景 A — 界面理解**（用户发截图说"看看这个"、"这个怎么做"，需要模型建立视觉认知后才能讨论）：
+
+```
+请详细描述这张界面截图：1) 这是什么页面/功能（推断用途）；2) 整体布局（几栏、上中下结构、元素位置关系）；3) 每个区域里有什么（文字内容、按钮、输入框、图标等，逐区域描述）；4) 当前界面处于什么状态（初始/填写中/错误/加载等）；5) 用户可能的操作流程。描述要足够细致，让我即使看不到图也能完全理解这个界面。
+```
+
+**场景 B — UI 设计分析**（Phase 1，用户提供参考图/竞品截图/当前界面，要提取技术细节用于实现）：
 
 ```
 请从 UI/UX 开发角度详细分析这张截图：1) 布局结构（网格/弹性布局、间距体系）；2) 色彩方案（主色/辅色/背景色，如有 hex 值请提取）；3) 字体排印（字号层级、字重、行高）；4) 组件清单（按钮/输入框/卡片/导航栏等，描述各自的样式）；5) 交互模式（hover/点击/过渡效果）；6) 阴影和圆角系统；7) 可用于 Tailwind CSS 实现的技术细节。最后给出 3-5 条可改进的建议。
 ```
 
-**场景 B — UI 质量对比**（Phase 3，对比实现截图与设计规格/参考图）：
+**场景 C — UI 质量对比**（Phase 3，对比实现截图与设计规格/参考图）：
 
 ```
 请对比分析这张截图：1) 与 design-spec.md 中定义的设计令牌是否一致（色板、圆角、阴影、字体）；2) 组件规格是否匹配（按钮高度、输入框样式、间距）；3) 是否有视觉缺陷（对齐问题、颜色偏差、层级混乱）；4) 列出 3-5 条需修复的问题，按严重程度排序。
 ```
 
-**场景 C — 通用识图**（非开发场景）：
+**场景 D — 通用识图**（非开发场景）：
 
 ```
 请详细描述这张图片的内容。
@@ -133,7 +139,7 @@ node vision.js "<图片路径>" "<分析提示词>"
 Phase 0: 立项    → brainstorming
 Phase 1: 设计    → vision 截图分析（参考/现状）→ ui-ux-pro-max（UX 结构）→ frontend-design（视觉）/ writing-plans（计划）
 Phase 2: 实现    → test-driven-development
-Phase 3: 质检    → verification-before-completion（含 vision 对比验证）→ security-review（涉敏）→ simplify
+Phase 3: 质检    → verification-before-completion（含 vision 对比验证）→ security-review（涉敏）→ /simplify（独立 agent 审查）
 Phase 4: 审查    → requesting-code-review → receiving-code-review（有反馈时）
 Phase 5: 收尾    → finishing-a-development-branch
 
@@ -175,7 +181,7 @@ Phase 5: 收尾    → finishing-a-development-branch
 | `verification-before-completion` | 声称"完成了"之前 | 1 |
 | `node vision.js` | UI 变更后，对比截图与 `docs/design-spec.md` 或参考图，验证视觉还原 | 2 |
 | `security-review` | 修改了 Electron IPC、文件 I/O、API Key 存取、数据序列化时 | 3 |
-| `simplify` | verification 通过后，commit 前 | 4 |
+| `/simplify` | verification 通过后，commit 前。启动 code-simplifier 独立 agent（opus 模型）审查 | 4 |
 
 **verification 检查清单**：`npm test` 全绿 + `npm run typecheck` 零错误 + `npm run build` 成功 + 手动测试用例通过。
 
