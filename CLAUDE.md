@@ -143,7 +143,7 @@ Phase 3: 质检    → verification-before-completion（含 vision 对比验证�
 Phase 4: 审查    → requesting-code-review → receiving-code-review（有反馈时）
 Phase 5: 收尾    → finishing-a-development-branch
 
-例外（随时触发）: systematic-debugging
+例外（随时触发）: systematic-debugging / Explore（子 agent 并行搜索）
 ```
 
 ### Phase 0 — 立项
@@ -166,11 +166,24 @@ Phase 5: 收尾    → finishing-a-development-branch
 - UI 任务（组件、页面、样式、交互）：`node vision.js`（有截图/参考时）→ `ui-ux-pro-max`（UX 结构）→ `frontend-design`（视觉方向）→ `writing-plans`（实施计划）
 - 小型 UI 调整（单组件微调）：可跳过 `writing-plans`，但必须走 `ui-ux-pro-max` + `frontend-design`
 
+### 代码库探索（Explore 子 agent）
+
+涉及跨文件/跨模块搜索时，使用 Explore 子 agent 并行搜索，而非逐个 Grep/Glob。典型场景：
+
+| 场景 | 示例 |
+|------|------|
+| 设计前摸底 | "在哪些文件里用到了 X 组件？X 的数据流是怎么走的？" |
+| 影响分析 | "改 Y 接口会影响哪些调用方？" |
+| 实现中查引用 | "Z 函数在哪些地方被调用了？类型定义在哪里？" |
+
+Explore agent 指定搜索广度：`quick`（单点查找）、`medium`（中等探索）、`very thorough`（多路径多命名搜索）。
+
 ### Phase 2 — 实现
 
 | Skill | 触发条件 | 说明 |
 |-------|----------|------|
 | `test-driven-development` | 编写任何实现代码前，Plan 完成后 | 先写失败测试 → 最小实现 → 重构。不跳过此环节 |
+| Explore 子 agent | 实现中需要跨文件搜索引用、类型定义、调用链时 | 并行搜索替代逐个 Grep，搜索广度选 medium 或 very thorough |
 
 **测试边界**：自动化测试（vitest）覆盖 store 逻辑、工具函数、IPC 处理；手动测试覆盖 UI 交互、视觉验证（用例管理在 `docs/test-cases.xlsx`）。详见 `docs/testing.md` 的管线映射表。
 
